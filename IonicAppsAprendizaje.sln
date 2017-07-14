@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.14
+VisualStudioVersion = 15.0.26430.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "IonicAppJuegoAdivina", "IonicApp2\IonicAppJuegoAdivina.jsproj", "{C1E83A2B-C45D-40CB-A1D2-2E1423F3DD35}"
 EndProject
@@ -9,7 +9,9 @@ Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "IonicAppSitiosGeoLocalizado
 EndProject
 Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "SimpleTestApiRest", "SimpleTestApiRest\SimpleTestApiRest.jsproj", "{00742C3F-786B-4ECF-9B64-E4A6D48A6AE3}"
 EndProject
-Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "IonicAppPrueba1", "IonicAppPrueba1\IonicAppPrueba1.jsproj", "{83BDC466-D777-4A12-BFA2-0E41F287E799}"
+Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "IonicAppPrueba1FireBase", "IonicAppPrueba1\IonicAppPrueba1FireBase.jsproj", "{83BDC466-D777-4A12-BFA2-0E41F287E799}"
+EndProject
+Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "ChatPrueba1", "ChatPrueba1\ChatPrueba1.jsproj", "{AC8DF767-4042-4AA6-85C3-103D087C9781}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -145,6 +147,36 @@ Global
 		{83BDC466-D777-4A12-BFA2-0E41F287E799}.Release|Windows-x86.ActiveCfg = Release|Windows-x86
 		{83BDC466-D777-4A12-BFA2-0E41F287E799}.Release|Windows-x86.Build.0 = Release|Windows-x86
 		{83BDC466-D777-4A12-BFA2-0E41F287E799}.Release|Windows-x86.Deploy.0 = Release|Windows-x86
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Debug|Android.ActiveCfg = Debug|Android
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Debug|Android.Build.0 = Debug|Android
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Debug|Android.Deploy.0 = Debug|Android
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Debug|iOS.ActiveCfg = Debug|iOS
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Debug|iOS.Build.0 = Debug|iOS
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Debug|iOS.Deploy.0 = Debug|iOS
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Debug|Windows-ARM.ActiveCfg = Debug|Windows-ARM
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Debug|Windows-ARM.Build.0 = Debug|Windows-ARM
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Debug|Windows-ARM.Deploy.0 = Debug|Windows-ARM
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Debug|Windows-x64.ActiveCfg = Debug|Windows-x64
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Debug|Windows-x64.Build.0 = Debug|Windows-x64
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Debug|Windows-x64.Deploy.0 = Debug|Windows-x64
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Debug|Windows-x86.ActiveCfg = Debug|Windows-x86
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Debug|Windows-x86.Build.0 = Debug|Windows-x86
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Debug|Windows-x86.Deploy.0 = Debug|Windows-x86
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Release|Android.ActiveCfg = Release|Android
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Release|Android.Build.0 = Release|Android
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Release|Android.Deploy.0 = Release|Android
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Release|iOS.ActiveCfg = Release|iOS
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Release|iOS.Build.0 = Release|iOS
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Release|iOS.Deploy.0 = Release|iOS
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Release|Windows-ARM.ActiveCfg = Release|Windows-ARM
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Release|Windows-ARM.Build.0 = Release|Windows-ARM
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Release|Windows-ARM.Deploy.0 = Release|Windows-ARM
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Release|Windows-x64.ActiveCfg = Release|Windows-x64
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Release|Windows-x64.Build.0 = Release|Windows-x64
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Release|Windows-x64.Deploy.0 = Release|Windows-x64
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Release|Windows-x86.ActiveCfg = Release|Windows-x86
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Release|Windows-x86.Build.0 = Release|Windows-x86
+		{AC8DF767-4042-4AA6-85C3-103D087C9781}.Release|Windows-x86.Deploy.0 = Release|Windows-x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
