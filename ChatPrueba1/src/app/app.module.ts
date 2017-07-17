@@ -8,8 +8,6 @@ import { AngularFireModule } from 'angularfire2';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
 
 import { MyApp } from './app.component';
-import { HomePage } from '../pages/home/home';
-import { ChatPage } from '../pages/chat/chat';
 
 const firebaseAuth = {
   apiKey: "AIzaSyAb0HxQhbX0YJ81gHHskY647as1Fp83ZdA",
@@ -22,9 +20,7 @@ const firebaseAuth = {
 
 @NgModule({
   declarations: [
-    MyApp,
-    HomePage,
-    ChatPage
+    MyApp
   ],
   imports: [
     BrowserModule,
@@ -34,9 +30,7 @@ const firebaseAuth = {
   ],
   bootstrap: [IonicApp],
   entryComponents: [
-    MyApp,
-    HomePage,
-    ChatPage
+    MyApp
   ],
   providers: [
     StatusBar,

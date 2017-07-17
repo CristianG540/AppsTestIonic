@@ -1,4 +1,5 @@
 ﻿import { Component } from '@angular/core';
+import { IonicPage } from 'ionic-angular';
 import { NavController, NavParams } from 'ionic-angular';
 import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/database';
 
@@ -8,7 +9,7 @@ import { AngularFireDatabase, FirebaseListObservable } from 'angularfire2/databa
  * See http://ionicframework.com/docs/components/#navigation for more info
  * on Ionic pages and navigation.
  */
-
+@IonicPage()
 @Component({
   selector: 'page-chat',
   templateUrl: 'chat.html',
@@ -58,7 +59,5 @@ export class ChatPage {
     });
     this.mensaje = '';
   }
-
-
 
 }

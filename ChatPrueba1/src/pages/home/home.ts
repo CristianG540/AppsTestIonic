@@ -1,7 +1,8 @@
 ﻿import { Component } from '@angular/core';
+import { IonicPage } from 'ionic-angular';
 import { NavController, AlertController } from 'ionic-angular';
-import { ChatPage } from '../chat/chat';
 
+@IonicPage()
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html'
@@ -27,7 +28,7 @@ export class HomePage {
 
   loguearse(): void {
     if (/^[a-zA-Z0-9]+$/.test(this.nomUsuario)) {
-      this.navCtrl.push(ChatPage, {
+      this.navCtrl.push('ChatPage', {
         nomUsuario: this.nomUsuario
       });
     } else {
