@@ -1,0 +1,29 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>{{ frase.person }}</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding text-center>
+  <ion-card>
+
+    <ion-card-content>
+      {{ frase.text }}
+    </ion-card-content>
+
+    <ion-row>
+      <ion-col>
+        <button ion-button small outline color="danger" (click)="removerFavorito()" >
+          Remover
+        </button>
+      </ion-col>
+    </ion-row>
+
+  </ion-card>
+
+  <button ion-button color="danger" (click)="cerrar()"> Cerrar </button>
+
+</ion-content>

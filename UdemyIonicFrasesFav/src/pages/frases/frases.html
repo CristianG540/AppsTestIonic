@@ -1,0 +1,28 @@
+<ion-header>
+
+  <ion-navbar>
+    <!-- frasesData?.category como se ve aqui la interrogacion punto "?." es un operador de angular o typscript que se llama elvis/existencial operator sirve para verificar si la propiedad existey ai eviatr el error de llamar una propiedad que no existe  -->
+    <ion-title> {{ frasesData.category | uppercase }} </ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content padding>
+ <ion-card *ngFor="let frase of frasesData.quotes; let i = index">
+
+   <ion-card-header>
+     #{{ i+1 }}
+   </ion-card-header>
+
+   <ion-card-content>
+     <p>{{ frase.text }}</p>
+     <p class="autor">{{ frase.person }}</p>
+   </ion-card-content>
+    <ion-row>
+      <ion-col text-right>
+        <button ion-button clear small (click)="agregarFavoritos(frase)" *ngIf="!esFavorito(frase)" >Favorito</button>
+        <button ion-button clear small color="danger" (click)="removerFavorito(frase)" *ngIf="esFavorito(frase)">Remover</button>
+      </ion-col>
+    </ion-row>
+ </ion-card>
+</ion-content>

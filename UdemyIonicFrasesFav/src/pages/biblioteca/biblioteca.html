@@ -1,0 +1,24 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Biblioteca de frases</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <h3 text-center>
+    Selecciona tu frase favorita
+  </h3>
+
+  <ion-list>
+    <button ion-item *ngFor="let fraseData of frasesCollection" [navPush]="frasesPage" [navParams]="fraseData" >
+      <ion-icon [name]="fraseData.icon" item-left></ion-icon>
+      <h2>{{ fraseData.category | uppercase }}</h2>
+      <p>{{ fraseData.quotes.length }} Frases</p>
+    </button>
+  </ion-list>
+
+</ion-content>

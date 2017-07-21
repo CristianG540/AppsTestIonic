@@ -1,0 +1,30 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Frases favoritas</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <ion-list>
+
+    <ion-item-sliding *ngFor="let frase of frases">
+
+      <ion-item (click)="verFrase(frase)">
+        <h2>{{ frase.person }}</h2>
+        <p>{{ frase.text }}</p>
+      </ion-item>
+
+      <ion-item-options>
+        <button ion-button color="danger" (click)="removerFavorito(frase)">
+          <ion-icon name="trash"></ion-icon>
+          Borrar
+        </button>
+      </ion-item-options>
+
+    </ion-item-sliding>
+
+  </ion-list>
+</ion-content>
