@@ -10,6 +10,7 @@ import { FavoritosPage } from '../pages/favoritos/favoritos';
 import { BibliotecaPage } from '../pages/biblioteca/biblioteca';
 import { FrasesPage } from '../pages/frases/frases';
 import { FrasePage } from '../pages/frases/frase/frase';
+import { ConfiguracionesPage } from '../pages/configuraciones/configuraciones';
 
 import { FrasesService } from '../services/frases';
 
@@ -20,7 +21,8 @@ import { FrasesService } from '../services/frases';
     BibliotecaPage,
     TabsPage,
     FrasesPage,
-    FrasePage
+    FrasePage,
+    ConfiguracionesPage
   ],
   imports: [
     BrowserModule,
@@ -33,7 +35,8 @@ import { FrasesService } from '../services/frases';
     BibliotecaPage,
     TabsPage,
     FrasesPage,
-    FrasePage
+    FrasePage,
+    ConfiguracionesPage
   ],
   providers: [
     StatusBar,

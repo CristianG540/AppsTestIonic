@@ -1,6 +1,11 @@
 <ion-header>
 
   <ion-navbar>
+    <ion-buttons start>
+      <button ion-button menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+    </ion-buttons>
     <ion-title>Frases favoritas</ion-title>
   </ion-navbar>
 
@@ -12,7 +17,7 @@
 
     <ion-item-sliding *ngFor="let frase of frases">
 
-      <ion-item (click)="verFrase(frase)">
+      <ion-item color="fraseBackground" (click)="verFrase(frase)">
         <h2>{{ frase.person }}</h2>
         <p>{{ frase.text }}</p>
       </ion-item>

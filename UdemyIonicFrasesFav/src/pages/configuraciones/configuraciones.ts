@@ -1,12 +1,5 @@
-import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
-
-/**
- * Generated class for the ConfiguracionesPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+﻿import { Component } from '@angular/core';
+import { Toggle } from 'ionic-angular';
 
 @Component({
   selector: 'page-configuraciones',
@@ -14,11 +7,11 @@ import { NavController, NavParams } from 'ionic-angular';
 })
 export class ConfiguracionesPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-  }
+  constructor(
+  ) { }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad ConfiguracionesPage');
+  private onToggle(toggle: Toggle): void {
+    console.log(toggle);
   }
 
 }
