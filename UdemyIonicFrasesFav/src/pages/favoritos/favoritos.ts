@@ -5,6 +5,7 @@ import { FrasePage } from '../frases/frase/frase';
 
 import { Frase } from '../../data/frase.interface';
 import { FrasesService } from '../../services/frases';
+import { ConfigsService } from '../../services/configs';
 
 
 @Component({
@@ -15,6 +16,7 @@ export class FavoritosPage {
   private frases: Frase[];
   constructor(
     private frasesService: FrasesService,
+    private configsService: ConfigsService,
     private modalCtrl: ModalController
   ) { }
 
@@ -34,5 +36,10 @@ export class FavoritosPage {
     this.frasesService.eliminarFraseFavoritos(frase);
     this.frases = this.frasesService.getFrasesFavoritas();
   }
+
+  private getBackground(): string {
+    return ( this.configsService.isAltBackground() ) ? 'altFraseBackground' : 'fraseBackground';
+  }
+
 
 }

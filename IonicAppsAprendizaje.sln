@@ -17,6 +17,8 @@ Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "UdemyIonicFirstApp", "Udemy
 EndProject
 Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "UdemyIonicFrasesFav", "UdemyIonicFrasesFav\UdemyIonicFrasesFav.jsproj", "{A7AEDCF2-EDC7-4FE8-BE6F-0796D53FB145}"
 EndProject
+Project("{262852C6-CD72-467D-83FE-5EEB1973A190}") = "UdemyIonicRecetasListaComprasApp", "UdemyIonicRecetasListaComprasApp\UdemyIonicRecetasListaComprasApp.jsproj", "{2AEF5C30-AB8F-405A-989B-8742943B23D3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Android = Debug|Android
@@ -241,6 +243,36 @@ Global
 		{A7AEDCF2-EDC7-4FE8-BE6F-0796D53FB145}.Release|Windows-x86.ActiveCfg = Release|Windows-x86
 		{A7AEDCF2-EDC7-4FE8-BE6F-0796D53FB145}.Release|Windows-x86.Build.0 = Release|Windows-x86
 		{A7AEDCF2-EDC7-4FE8-BE6F-0796D53FB145}.Release|Windows-x86.Deploy.0 = Release|Windows-x86
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Debug|Android.ActiveCfg = Debug|Android
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Debug|Android.Build.0 = Debug|Android
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Debug|Android.Deploy.0 = Debug|Android
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Debug|iOS.ActiveCfg = Debug|iOS
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Debug|iOS.Build.0 = Debug|iOS
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Debug|iOS.Deploy.0 = Debug|iOS
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Debug|Windows-ARM.ActiveCfg = Debug|Windows-ARM
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Debug|Windows-ARM.Build.0 = Debug|Windows-ARM
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Debug|Windows-ARM.Deploy.0 = Debug|Windows-ARM
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Debug|Windows-x64.ActiveCfg = Debug|Windows-x64
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Debug|Windows-x64.Build.0 = Debug|Windows-x64
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Debug|Windows-x64.Deploy.0 = Debug|Windows-x64
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Debug|Windows-x86.ActiveCfg = Debug|Windows-x86
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Debug|Windows-x86.Build.0 = Debug|Windows-x86
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Debug|Windows-x86.Deploy.0 = Debug|Windows-x86
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Release|Android.ActiveCfg = Release|Android
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Release|Android.Build.0 = Release|Android
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Release|Android.Deploy.0 = Release|Android
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Release|iOS.ActiveCfg = Release|iOS
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Release|iOS.Build.0 = Release|iOS
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Release|iOS.Deploy.0 = Release|iOS
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Release|Windows-ARM.ActiveCfg = Release|Windows-ARM
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Release|Windows-ARM.Build.0 = Release|Windows-ARM
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Release|Windows-ARM.Deploy.0 = Release|Windows-ARM
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Release|Windows-x64.ActiveCfg = Release|Windows-x64
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Release|Windows-x64.Build.0 = Release|Windows-x64
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Release|Windows-x64.Deploy.0 = Release|Windows-x64
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Release|Windows-x86.ActiveCfg = Release|Windows-x86
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Release|Windows-x86.Build.0 = Release|Windows-x86
+		{2AEF5C30-AB8F-405A-989B-8742943B23D3}.Release|Windows-x86.Deploy.0 = Release|Windows-x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

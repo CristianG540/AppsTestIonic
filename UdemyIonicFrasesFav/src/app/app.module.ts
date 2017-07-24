@@ -13,6 +13,8 @@ import { FrasePage } from '../pages/frases/frase/frase';
 import { ConfiguracionesPage } from '../pages/configuraciones/configuraciones';
 
 import { FrasesService } from '../services/frases';
+import { ConfigsService } from '../services/configs';
+
 
 @NgModule({
   declarations: [
@@ -42,7 +44,8 @@ import { FrasesService } from '../services/frases';
     StatusBar,
     SplashScreen,
     { provide: ErrorHandler, useClass: IonicErrorHandler },
-    FrasesService
+    FrasesService,
+    ConfigsService
   ]
 })
 export class AppModule {}

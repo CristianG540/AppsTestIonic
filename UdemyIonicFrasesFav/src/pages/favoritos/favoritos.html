@@ -17,7 +17,7 @@
 
     <ion-item-sliding *ngFor="let frase of frases">
 
-      <ion-item color="fraseBackground" (click)="verFrase(frase)">
+      <ion-item [color]="getBackground()" (click)="verFrase(frase)">
         <h2>{{ frase.person }}</h2>
         <p>{{ frase.text }}</p>
       </ion-item>
