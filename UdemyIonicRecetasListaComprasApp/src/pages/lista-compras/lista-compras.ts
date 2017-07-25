@@ -1,12 +1,7 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
-
-/**
- * Generated class for the ListaComprasPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+import { NgForm } from "@angular/forms";
+import { ListaComprasService } from "../../services/lista-compras.service";
+import { Ingrediente } from "../../models/ingrediente";
 
 @Component({
   selector: 'page-lista-compras',
@@ -14,11 +9,23 @@ import { NavController, NavParams } from 'ionic-angular';
 })
 export class ListaComprasPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  private listaArticulos: Ingrediente[] = [];
+
+  constructor(
+    private listaComprasService: ListaComprasService
+  ) {}
+
+  ionViewDidEnter(){
+    this.listaArticulos = this.listaComprasService.getIngredientes();
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad ListaComprasPage');
+  private agregarArticulo(form: NgForm): void {
+    this.listaArticulos = this.listaComprasService.agregarIngrediente(form.value.nombreIngrediente, form.value.cantidad);
+    form.reset();
+  }
+
+  private borrarArticulo(index: number) {
+    this.listaArticulos = this.listaComprasService.eliminarIngrediente(index);
   }
 
 }
