@@ -4,18 +4,22 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 
+import { ModeTipoPipe } from "../pages/edit-receta/mode.pipe";
 import { MyApp } from './app.component';
 import { TabsPage } from '../pages/tabs/tabs';
 import { ListaComprasPage } from '../pages/lista-compras/lista-compras';
 import { RecetasPage } from "../pages/recetas/recetas";
 import { ListaComprasService } from "../services/lista-compras.service";
+import { EditRecetaPage } from "../pages/edit-receta/edit-receta";
 
 @NgModule({
   declarations: [
     MyApp,
+    ModeTipoPipe,
     TabsPage,
     ListaComprasPage,
-    RecetasPage
+    RecetasPage,
+    EditRecetaPage
   ],
   imports: [
     BrowserModule,
@@ -26,7 +30,8 @@ import { ListaComprasService } from "../services/lista-compras.service";
     MyApp,
     TabsPage,
     ListaComprasPage,
-    RecetasPage
+    RecetasPage,
+    EditRecetaPage
   ],
   providers: [
     StatusBar,

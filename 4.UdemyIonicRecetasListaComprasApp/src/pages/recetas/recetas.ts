@@ -1,12 +1,6 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
-
-/**
- * Generated class for the RecetasPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+import { NavController } from 'ionic-angular';
+import { EditRecetaPage } from "../edit-receta/edit-receta";
 
 @Component({
   selector: 'page-recetas',
@@ -14,11 +8,13 @@ import { NavController, NavParams } from 'ionic-angular';
 })
 export class RecetasPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(
+    public navCtrl: NavController
+  ) {
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad RecetasPage');
+  private nuevaReceta(): void{
+    this.navCtrl.push(EditRecetaPage, {mode: 'POST'})
   }
 
 }
