@@ -22,7 +22,7 @@
     <button ion-button type="submit" block [disabled]="!f.valid"> Agregar artículo</button>
   </form>
   <ion-list >
-    <ion-item *ngFor="let articulo of listaArticulos; let i = index" (click)="borrarArticulo(i)" >
+    <ion-item *ngFor="let articulo of listaComprasService.ingredientes; let i = index" (click)="borrarArticulo(i)" >
       {{ articulo.nombre }} ( {{ articulo.cantidad }} )
     </ion-item>
   </ion-list>

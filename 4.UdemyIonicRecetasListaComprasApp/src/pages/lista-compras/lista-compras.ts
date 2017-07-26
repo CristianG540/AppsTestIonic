@@ -9,23 +9,20 @@ import { Ingrediente } from "../../models/ingrediente";
 })
 export class ListaComprasPage {
 
-  private listaArticulos: Ingrediente[] = [];
-
   constructor(
     private listaComprasService: ListaComprasService
   ) {}
 
-  ionViewDidEnter(){
-    this.listaArticulos = this.listaComprasService.getIngredientes();
-  }
-
   private agregarArticulo(form: NgForm): void {
-    this.listaArticulos = this.listaComprasService.agregarIngrediente(form.value.nombreIngrediente, form.value.cantidad);
+    this.listaComprasService.ingredientes = [{
+      nombre: form.value.nombreIngrediente,
+      cantidad: form.value.cantidad
+    }];
     form.reset();
   }
 
   private borrarArticulo(index: number) {
-    this.listaArticulos = this.listaComprasService.eliminarIngrediente(index);
+    this.listaComprasService.eliminarIngrediente(index);
   }
 
 }
