@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, ActionSheetController, ActionSheet, AlertController } from 'ionic-angular';
-import { FormGroup, FormControl, Validators, FormArray } from "@angular/forms";
+import { NavController, NavParams, ActionSheetController, ActionSheet, AlertController, Alert } from 'ionic-angular';
+import { FormGroup, FormControl, FormArray, FormBuilder, Validators  } from "@angular/forms";
+
+import { Ingrediente } from "../../models/ingrediente";
 
 @Component({
   selector: 'page-edit-receta',
@@ -9,14 +11,15 @@ import { FormGroup, FormControl, Validators, FormArray } from "@angular/forms";
 export class EditRecetaPage {
 
   private mode: string;
-  public opcionesSelect = ['Facil', 'Media', 'Dificil'];
+  private opcionesSelect = ['Facil', 'Media', 'Dificil'];
   private recetaForm: FormGroup;
 
   constructor(
     private navCtrl: NavController,
     private navParams: NavParams,
     private actionSheetCtrl: ActionSheetController,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    private fb: FormBuilder
   ) {
   }
 
@@ -26,11 +29,11 @@ export class EditRecetaPage {
   }
 
   private initializeForm(): void {
-    this.recetaForm = new FormGroup({
-      titulo: new FormControl(null, Validators.required),
-      descripcion: new FormControl(null, Validators.required),
-      dificultad: new FormControl('Media', Validators.required),
-      ingredientes: new FormArray([])
+    this.recetaForm = this.fb.group({
+      titulo: [null, Validators.required],
+      descripcion: [null, Validators.required],
+      dificultad: ['Media', Validators.required],
+      ingredientes: this.fb.array([])
     });
   }
 
@@ -45,14 +48,14 @@ export class EditRecetaPage {
         {
           text : "Agregar Ingrediente",
           handler: () => {
-
+            this.crearIngredienteAlerta().present();
           }
         },
         {
           text : "Eliminar todos los ingredientes",
           role: 'destrutive',
           handler: () => {
-
+            this.recetaForm.setControl('ingredientes', this.fb.array([]) );
           }
         },
         {
@@ -60,11 +63,12 @@ export class EditRecetaPage {
           role: 'cancel'
         }
       ]
-    })
+    });
+    actionSheet.present();
   }
 
-  private crearIngredienteAlerta(): void {
-    const nuevoIngredienteAlert = this.alertCtrl.create({
+  private crearIngredienteAlerta(): Alert {
+    return this.alertCtrl.create({
       title: 'Agregar ingrediente',
       inputs: [
         {
@@ -81,8 +85,10 @@ export class EditRecetaPage {
           text: 'Agregar',
           handler: data => {
             if (data.nombre.trim() == '' || data.nombre == null ) {
-
+              return;
             }
+            this.ingredientes
+              .push( this.fb.control(data.nombre, Validators.required) );
           }
         }
 
@@ -91,5 +97,8 @@ export class EditRecetaPage {
 
   }
 
+ public get ingredientes() : FormArray {
+   return this.recetaForm.get('ingredientes') as FormArray;
+ }
 
 }
