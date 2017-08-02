@@ -37,7 +37,7 @@
 
     </ion-list>
 
-    <button ion-button block type="submit"> {{ mode | modeTipoPipe }} </button>
+    <button ion-button block type="submit" [disabled]="!recetaForm.valid" > {{ mode | modeTipoPipe }} </button>
   </form>
 
 </ion-content>

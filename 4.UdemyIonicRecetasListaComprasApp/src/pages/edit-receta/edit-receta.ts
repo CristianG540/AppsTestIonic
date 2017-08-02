@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, ActionSheetController, ActionSheet, AlertController, Alert } from 'ionic-angular';
+import { NavController, NavParams, ActionSheetController, ActionSheet, AlertController, Alert, ToastController } from 'ionic-angular';
 import { FormGroup, FormControl, FormArray, FormBuilder, Validators  } from "@angular/forms";
-
-import { Ingrediente } from "../../models/ingrediente";
+import { RecetaService } from "../../services/receta.service";
+import { Receta } from "../../models/receta";
 
 @Component({
   selector: 'page-edit-receta',
@@ -19,7 +19,9 @@ export class EditRecetaPage {
     private navParams: NavParams,
     private actionSheetCtrl: ActionSheetController,
     private alertCtrl: AlertController,
-    private fb: FormBuilder
+    private toastCtrl: ToastController,
+    private fb: FormBuilder,
+    private recetaService: RecetaService
   ) {
   }
 
@@ -39,6 +41,9 @@ export class EditRecetaPage {
 
   private onSubmit(): void {
     console.log(this.recetaForm);
+    const formModel: Receta = this.recetaForm.value;
+    this.recetaService.recetas = [formModel];
+    console.log('recetas', this.recetaService.recetas );
   }
 
   private adminIngredientes(): void {
@@ -55,7 +60,13 @@ export class EditRecetaPage {
           text : "Eliminar todos los ingredientes",
           role: 'destrutive',
           handler: () => {
-            this.recetaForm.setControl('ingredientes', this.fb.array([]) );
+            if(this.ingredientes.length > 0){
+              this.recetaForm.setControl('ingredientes', this.fb.array([]) );
+              this.toastCtrl.create({
+                message: 'Eliminados!',
+                duration: 2000
+              }).present();
+            }
           }
         },
         {
@@ -85,10 +96,20 @@ export class EditRecetaPage {
           text: 'Agregar',
           handler: data => {
             if (data.nombre.trim() == '' || data.nombre == null ) {
+              this.toastCtrl.create({
+                message: 'Por favor ingresa un valor valido',
+                duration: 2000
+              }).present();
               return;
             }
+
             this.ingredientes
               .push( this.fb.control(data.nombre, Validators.required) );
+
+            this.toastCtrl.create({
+              message: 'Agregado!',
+              duration: 2000
+            }).present();
           }
         }
 
