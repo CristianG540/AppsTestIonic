@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams, ActionSheetController, ActionSheet, AlertController, Alert, ToastController } from 'ionic-angular';
-import { FormGroup, FormControl, FormArray, FormBuilder, Validators  } from "@angular/forms";
+import { FormGroup, FormArray, FormBuilder, Validators  } from "@angular/forms";
 import { RecetaService } from "../../services/receta.service";
-import { Receta } from "../../models/receta";
+import { Ingrediente } from "../../models/ingrediente";
 
 @Component({
   selector: 'page-edit-receta',
@@ -41,9 +41,17 @@ export class EditRecetaPage {
 
   private onSubmit(): void {
     console.log(this.recetaForm);
-    const formModel: Receta = this.recetaForm.value;
+    let formModel = JSON.parse(JSON.stringify(this.recetaForm.value));
+
+    if(formModel.ingredientes.length > 0){
+      let ingredientes = formModel.ingredientes.map(
+        ing => new Ingrediente(ing as string)
+      )
+      formModel.ingredientes = ingredientes;
+    }
+
     this.recetaService.recetas = [formModel];
-    console.log('recetas', this.recetaService.recetas );
+    this.navCtrl.popToRoot();
   }
 
   private adminIngredientes(): void {

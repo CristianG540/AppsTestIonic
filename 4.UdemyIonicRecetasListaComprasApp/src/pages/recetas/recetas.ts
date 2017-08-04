@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { EditRecetaPage } from "../edit-receta/edit-receta";
+import { RecetaService } from "../../services/receta.service";
+import { Receta } from "../../models/receta";
 
 @Component({
   selector: 'page-recetas',
@@ -8,10 +10,15 @@ import { EditRecetaPage } from "../edit-receta/edit-receta";
 })
 export class RecetasPage {
 
+  private recetas: Receta[];
+
   constructor(
-    public navCtrl: NavController
+    private navCtrl: NavController,
+    private recetaService: RecetaService
   ) {
   }
+
+
 
   private nuevaReceta(): void{
     this.navCtrl.push(EditRecetaPage, {mode: 'POST'})
