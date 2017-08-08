@@ -1,24 +1,33 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-
-/**
- * Generated class for the RecetaPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+import { Receta } from "../../../models/receta";
+import { RecetaService } from "../../../services/receta.service";
+import { EditRecetaPage } from "../../edit-receta/edit-receta";
 
 @Component({
   selector: 'page-receta',
   templateUrl: 'receta.html',
 })
 export class RecetaPage {
-
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  private idReceta: number;
+  private receta: Receta;
+  constructor(
+    public navCtrl: NavController,
+    public navParams: NavParams,
+    private recetaService: RecetaService
+  ) {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad RecetaPage');
+    this.idReceta = this.navParams.get('idReceta');
+    this.receta = this.recetaService.recetas[this.idReceta];
+    console.log(this.receta);
   }
 
+  private editarReceta(): void {
+    this.navCtrl.push(EditRecetaPage, {
+      mode: 'PUT',
+      index: this.idReceta
+    });
+  }
 }

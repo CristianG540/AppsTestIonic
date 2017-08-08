@@ -14,8 +14,10 @@
 
 <ion-content padding>
   <ion-list >
-    <ion-item *ngFor="let receta of recetaService.recetas"  >
-      {{ receta.titulo }}
-    </ion-item>
+    <button ion-item *ngFor="let receta of recetas; let i = index" (click)="cargarReceta(i)">
+        <h2> {{ receta.titulo }} </h2>
+        <ion-note> {{ receta.dificultad }} </ion-note>
+    </button>
   </ion-list>
+
 </ion-content>

@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { EditRecetaPage } from "../edit-receta/edit-receta";
+import { RecetaPage } from "./receta/receta";
+
 import { RecetaService } from "../../services/receta.service";
 import { Receta } from "../../models/receta";
 
@@ -18,10 +20,16 @@ export class RecetasPage {
   ) {
   }
 
+  ionViewWillEnter(){
+   this.recetas = this.recetaService.recetas;
+  }
 
-
-  private nuevaReceta(): void{
+  private nuevaReceta(): void {
     this.navCtrl.push(EditRecetaPage, {mode: 'POST'})
+  }
+
+  private cargarReceta(idReceta: number): void {
+    this.navCtrl.push(RecetaPage, { idReceta: idReceta});
   }
 
 }
