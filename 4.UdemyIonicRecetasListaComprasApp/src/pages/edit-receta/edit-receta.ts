@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { NavController, NavParams, ActionSheetController, ActionSheet, AlertController, Alert, ToastController } from 'ionic-angular';
+import { NavController, NavParams, ActionSheetController, ActionSheet, AlertController, Alert, ToastController, Platform } from 'ionic-angular';
 import { FormGroup, FormArray, FormBuilder, Validators  } from "@angular/forms";
 import { RecetaService } from "../../services/receta.service";
 import { Ingrediente } from "../../models/ingrediente";
@@ -17,6 +17,7 @@ export class EditRecetaPage {
   private receta: Receta;
 
   constructor(
+    public platform: Platform,
     private navCtrl: NavController,
     private navParams: NavParams,
     private actionSheetCtrl: ActionSheetController,
@@ -25,6 +26,10 @@ export class EditRecetaPage {
     private fb: FormBuilder,
     private recetaService: RecetaService
   ) {
+  }
+
+  ionViewWillEnter(){
+
   }
 
   ionViewWillLoad() {
@@ -67,9 +72,15 @@ export class EditRecetaPage {
       )
       formModel.ingredientes = ingredientes;
     }
-
-    this.recetaService.recetas = [formModel];
+    if(this.mode == "PUT"){
+      let i = this.navParams.get('index');
+      this.recetaService.actualizar(i, formModel);
+      console.log('servicio', this.recetaService.recetas);
+    }else{
+      this.recetaService.recetas = [formModel];
+    }
     this.navCtrl.popToRoot();
+
   }
 
   private adminIngredientes(): void {
@@ -78,6 +89,7 @@ export class EditRecetaPage {
       buttons: [
         {
           text : "Agregar Ingrediente",
+          icon: !this.platform.is('ios') ? 'add' : null,
           handler: () => {
             this.crearIngredienteAlerta().present();
           }
@@ -85,6 +97,7 @@ export class EditRecetaPage {
         {
           text : "Eliminar todos los ingredientes",
           role: 'destructive',
+          icon: !this.platform.is('ios') ? 'trash' : null,
           handler: () => {
             if(this.ingredientes.length > 0){
               this.recetaForm.setControl('ingredientes', this.fb.array([]) );
@@ -97,7 +110,8 @@ export class EditRecetaPage {
         },
         {
           text : "Cancelar",
-          role: 'cancel'
+          role: 'cancel',
+          icon: !this.platform.is('ios') ? 'close' : null,
         }
       ]
     });
@@ -151,7 +165,6 @@ export class EditRecetaPage {
   private setIngredientes(ingredientes: Ingrediente[]) {
     const ingredienteCtrls = ingredientes.map(
       (ingrediente: Ingrediente) => {
-        debugger;
         return this.fb.control(ingrediente.nombre, Validators.required)
       }
     );

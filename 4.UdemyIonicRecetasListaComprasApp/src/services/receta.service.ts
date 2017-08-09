@@ -10,6 +10,10 @@ export class RecetaService {
     this._recetas.splice(index, 1);
   }
 
+  public actualizar(index: number, receta: Receta): void {
+    this._recetas[index] = receta;
+  }
+
   public set recetas(recetas: Receta[]) {
     this._recetas.push(...recetas );
   }
