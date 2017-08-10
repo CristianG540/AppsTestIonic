@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
+
+import { EditRecetaPage } from "../../edit-receta/edit-receta";
+
 import { Receta } from "../../../models/receta";
 import { RecetaService } from "../../../services/receta.service";
-import { EditRecetaPage } from "../../edit-receta/edit-receta";
+import { ListaComprasService } from "../../../services/lista-compras.service";
 
 @Component({
   selector: 'page-receta',
@@ -12,9 +15,10 @@ export class RecetaPage {
   private idReceta: number;
   private receta: Receta;
   constructor(
-    public navCtrl: NavController,
-    public navParams: NavParams,
-    private recetaService: RecetaService
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private recetaService: RecetaService,
+    private listComprasServ: ListaComprasService
   ) {
   }
 
@@ -30,4 +34,14 @@ export class RecetaPage {
       index: this.idReceta
     });
   }
+
+  private agregarIngredientes(): void {
+    this.listComprasServ.ingredientes = this.receta.ingredientes;
+  }
+
+  private borrarReceta(): void {
+    this.recetaService.eliminarReceta(this.idReceta);
+    this.navCtrl.popToRoot();
+  }
+
 }
