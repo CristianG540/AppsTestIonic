@@ -1,24 +1,42 @@
 import { Component } from '@angular/core';
 import { NavController, NavParams } from 'ionic-angular';
-
-/**
- * Generated class for the SignupPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+import { FormGroup, FormBuilder, Validators  } from "@angular/forms";
 
 @Component({
   selector: 'page-signup',
   templateUrl: 'signup.html',
 })
 export class SignupPage {
-
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  private signUpForm: FormGroup;
+  constructor(
+    private navCtrl: NavController,
+    private navParams: NavParams,
+    private fb: FormBuilder
+  ) {
+    this.signUpForm = this.createForm();
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad SignupPage');
+  private createForm(): FormGroup {
+    return this.fb.group({
+      email : [
+        null,
+        [
+          Validators.required,
+          Validators.email
+        ]
+      ],
+      password : [
+        null,
+        [
+          Validators.required,
+          Validators.minLength(6)
+        ]
+      ]
+    });
+  }
+
+  private onSubmit(): void {
+    console.log(this.signUpForm.value);
   }
 
 }

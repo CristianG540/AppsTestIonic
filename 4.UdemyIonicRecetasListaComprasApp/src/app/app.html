@@ -8,17 +8,17 @@
   </ion-header>
   <ion-content>
     <ion-list>
-      <button ion-item icon-left (click)="cargarPagina(tabsPage)">
-        <ion-icon name="book" ></ion-icon> Libro de Recetas
+      <button ion-item (click)="cargarPagina(rootPage)">
+        <ion-icon name="home" item-start ></ion-icon> Libro de Recetas
       </button>
-      <button ion-item icon-left (click)="cargarPagina(tabsPage)">
-        <ion-icon name="log-in" ></ion-icon> Loguearse
+      <button ion-item (click)="cargarPagina(signInPage)">
+        <ion-icon name="log-in" item-start ></ion-icon> Loguearse
       </button>
-      <button ion-item icon-left (click)="cargarPagina(tabsPage)">
-          <ion-icon name="person" ></ion-icon> Registrarse
+      <button ion-item (click)="cargarPagina(signUpPage)">
+        <ion-icon name="person" item-start ></ion-icon> Registrarse
       </button>
-      <button ion-item icon-left (click)="cargarPagina(tabsPage)">
-          <ion-icon name="log-out" ></ion-icon> Desconectarse
+      <button ion-item (click)="desconectarse()">
+        <ion-icon name="log-out" item-start ></ion-icon> Desconectarse
       </button>
     </ion-list>
   </ion-content>

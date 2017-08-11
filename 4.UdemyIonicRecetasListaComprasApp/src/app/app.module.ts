@@ -10,6 +10,8 @@ import { ListaComprasPage } from '../pages/lista-compras/lista-compras';
 import { RecetasPage } from "../pages/recetas/recetas";
 import { EditRecetaPage } from "../pages/edit-receta/edit-receta";
 import { RecetaPage } from "../pages/recetas/receta/receta";
+import { SignupPage } from "../pages/signup/signup";
+import { SigninPage } from "../pages/signin/signin";
 
 import { ListaComprasService } from "../services/lista-compras.service";
 import { RecetaService } from "../services/receta.service";
@@ -24,7 +26,9 @@ import { ModeTipoPipe } from "../pages/edit-receta/mode.pipe";
     ListaComprasPage,
     RecetasPage,
     EditRecetaPage,
-    RecetaPage
+    RecetaPage,
+    SigninPage,
+    SignupPage
   ],
   imports: [
     BrowserModule,
@@ -37,7 +41,9 @@ import { ModeTipoPipe } from "../pages/edit-receta/mode.pipe";
     ListaComprasPage,
     RecetasPage,
     EditRecetaPage,
-    RecetaPage
+    RecetaPage,
+    SigninPage,
+    SignupPage
   ],
   providers: [
     StatusBar,
