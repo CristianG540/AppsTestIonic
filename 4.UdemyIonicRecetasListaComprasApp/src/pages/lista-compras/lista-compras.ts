@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { NgForm } from "@angular/forms";
 import { ListaComprasService } from "../../services/lista-compras.service";
-import { Ingrediente } from "../../models/ingrediente";
+import { PopoverController } from "ionic-angular";
+import { ListaComprasOpcionesPage } from "./lc-opciones/lc-opciones";
+import { AuthService } from "../../services/auth.service";
 
 @Component({
   selector: 'page-lista-compras',
@@ -10,7 +12,9 @@ import { Ingrediente } from "../../models/ingrediente";
 export class ListaComprasPage {
 
   constructor(
-    private listaComprasService: ListaComprasService
+    private popOverCtrl: PopoverController,
+    private listaComprasService: ListaComprasService,
+    private authService: AuthService
   ) {}
 
   private agregarArticulo(form: NgForm): void {
@@ -23,6 +27,24 @@ export class ListaComprasPage {
 
   private borrarArticulo(index: number) {
     this.listaComprasService.eliminarIngrediente(index);
+  }
+
+  private mostrarOpciones(evt: MouseEvent) {
+    let popover = this.popOverCtrl.create(ListaComprasOpcionesPage);
+    popover.present({
+      ev: evt
+    });
+    popover.onDidDismiss(data => {
+      if(data.accion == "guardar"){
+        this.authService.usuarioActivo().getToken()
+          .then( (token: string) => {
+
+          })
+          .catch();
+      }else if(data.accion == "cargar"){
+
+      }
+    });
   }
 
 }

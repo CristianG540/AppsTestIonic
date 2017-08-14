@@ -8,16 +8,16 @@
   </ion-header>
   <ion-content>
     <ion-list>
-      <button ion-item (click)="cargarPagina(rootPage)">
+      <button ion-item (click)="cargarPagina(rootPage)" *ngIf="isAuth">
         <ion-icon name="home" item-start ></ion-icon> Libro de Recetas
       </button>
-      <button ion-item (click)="cargarPagina(signInPage)">
+      <button ion-item (click)="cargarPagina(signInPage)" *ngIf="!isAuth">
         <ion-icon name="log-in" item-start ></ion-icon> Loguearse
       </button>
-      <button ion-item (click)="cargarPagina(signUpPage)">
+      <button ion-item (click)="cargarPagina(signUpPage)" *ngIf="!isAuth">
         <ion-icon name="person" item-start ></ion-icon> Registrarse
       </button>
-      <button ion-item (click)="desconectarse()">
+      <button ion-item (click)="desconectarse()" *ngIf="isAuth">
         <ion-icon name="log-out" item-start ></ion-icon> Desconectarse
       </button>
     </ion-list>

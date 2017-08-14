@@ -1,3 +1,4 @@
+import { HttpModule } from '@angular/http';
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
@@ -12,9 +13,11 @@ import { EditRecetaPage } from "../pages/edit-receta/edit-receta";
 import { RecetaPage } from "../pages/recetas/receta/receta";
 import { SignupPage } from "../pages/signup/signup";
 import { SigninPage } from "../pages/signin/signin";
+import { ListaComprasOpcionesPage } from "../pages/lista-compras/lc-opciones/lc-opciones";
 
 import { ListaComprasService } from "../services/lista-compras.service";
 import { RecetaService } from "../services/receta.service";
+import { AuthService } from "../services/auth.service";
 
 import { ModeTipoPipe } from "../pages/edit-receta/mode.pipe";
 
@@ -28,10 +31,12 @@ import { ModeTipoPipe } from "../pages/edit-receta/mode.pipe";
     EditRecetaPage,
     RecetaPage,
     SigninPage,
-    SignupPage
+    SignupPage,
+    ListaComprasOpcionesPage
   ],
   imports: [
     BrowserModule,
+    HttpModule,
     IonicModule.forRoot(MyApp)
   ],
   bootstrap: [IonicApp],
@@ -43,14 +48,16 @@ import { ModeTipoPipe } from "../pages/edit-receta/mode.pipe";
     EditRecetaPage,
     RecetaPage,
     SigninPage,
-    SignupPage
+    SignupPage,
+    ListaComprasOpcionesPage
   ],
   providers: [
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     ListaComprasService,
-    RecetaService
+    RecetaService,
+    AuthService
   ]
 })
 export class AppModule {}
