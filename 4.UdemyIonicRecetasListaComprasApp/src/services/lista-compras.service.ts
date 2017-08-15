@@ -27,12 +27,26 @@ export class ListaComprasService {
     return JSON.parse(JSON.stringify(this._ingredientes));
   }
 
-  public guardarLista(token:string): any {
+  public guardarLista(token:string): Observable<any> {
+
     let usrId = this.authService.usuarioActivo().uid;
-    let url = `https://udemyionicrecetaslistcompras.firebaseio.com/${ usrId }/lista-compras.json`;
+    let url = `https://udemyionicrecetaslistcompras.firebaseio.com/${ usrId }/lista-compras.json?auth=${token}`;
+
     return this.http.put(url, this._ingredientes)
       .map( (res: Response) => {
         return res.json();
+      });
+  }
+
+  public recuperarLista(token: string): Observable<any> {
+    let usrId = this.authService.usuarioActivo().uid;
+    let url = `https://udemyionicrecetaslistcompras.firebaseio.com/${ usrId }/lista-compras.json?auth=${token}`;
+
+    return this.http.get(url)
+      .map( (res: Response) => {
+        return res.json();
+      }).do( ( d: Ingrediente[] ) => {
+        this._ingredientes = (d) ? d : [];
       });
   }
 

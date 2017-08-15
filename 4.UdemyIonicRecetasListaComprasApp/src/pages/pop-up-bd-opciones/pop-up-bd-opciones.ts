@@ -2,10 +2,10 @@ import { Component } from '@angular/core';
 import { ViewController } from "ionic-angular";
 
 @Component({
-  selector: 'page-lc-opciones',
-  templateUrl: 'lc-opciones.html',
+  selector: 'pop-up-bd-opciones',
+  templateUrl: 'pop-up-bd-opciones.html',
 })
-export class ListaComprasOpcionesPage {
+export class PopUpBdOpcionesPage {
   constructor(
     private viewCtrl: ViewController
   ) {}

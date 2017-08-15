@@ -11,6 +11,11 @@
         <ion-icon name="add"></ion-icon>
       </button>
     </ion-buttons>
+    <ion-buttons end>
+        <button ion-button icon-only (click)="mostrarOpciones($event)">
+          <ion-icon name="more"></ion-icon>
+        </button>
+      </ion-buttons>
     <ion-title>Recetas</ion-title>
   </ion-navbar>
 
@@ -19,7 +24,7 @@
 
 <ion-content padding>
   <ion-list >
-    <button ion-item *ngFor="let receta of recetas; let i = index" (click)="cargarReceta(i)">
+    <button ion-item *ngFor="let receta of this.recetaService.recetas; let i = index" (click)="cargarReceta(i)">
         <h2> {{ receta.titulo }} </h2>
         <ion-note> {{ receta.dificultad }} </ion-note>
     </button>

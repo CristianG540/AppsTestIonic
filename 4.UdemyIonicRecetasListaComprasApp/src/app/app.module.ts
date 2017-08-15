@@ -13,7 +13,7 @@ import { EditRecetaPage } from "../pages/edit-receta/edit-receta";
 import { RecetaPage } from "../pages/recetas/receta/receta";
 import { SignupPage } from "../pages/signup/signup";
 import { SigninPage } from "../pages/signin/signin";
-import { ListaComprasOpcionesPage } from "../pages/lista-compras/lc-opciones/lc-opciones";
+import { PopUpBdOpcionesPage } from "../pages/pop-up-bd-opciones/pop-up-bd-opciones";
 
 import { ListaComprasService } from "../services/lista-compras.service";
 import { RecetaService } from "../services/receta.service";
@@ -32,7 +32,7 @@ import { ModeTipoPipe } from "../pages/edit-receta/mode.pipe";
     RecetaPage,
     SigninPage,
     SignupPage,
-    ListaComprasOpcionesPage
+    PopUpBdOpcionesPage
   ],
   imports: [
     BrowserModule,
@@ -49,7 +49,7 @@ import { ModeTipoPipe } from "../pages/edit-receta/mode.pipe";
     RecetaPage,
     SigninPage,
     SignupPage,
-    ListaComprasOpcionesPage
+    PopUpBdOpcionesPage
   ],
   providers: [
     StatusBar,
