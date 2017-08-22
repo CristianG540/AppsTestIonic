@@ -14,8 +14,12 @@ export class TodosProvider {
     private http: Http,
     private appRef: ApplicationRef
   ) {
+  }
+
+  public init(details): void {
+
     this.db= new PouchDB('cloudo');
-    this.remoteDB = new PouchDB('http://108.163.227.76:5984/cloudo', {
+    this.remoteDB = new PouchDB(details.userDBs.supertest, {
       auth: {
         username: 'admin',
         password: 'Webmaster2017#@'
@@ -28,7 +32,8 @@ export class TodosProvider {
     this.db.sync(this.remoteDB, replicationOptions)
     /*.on('change', function (change) {
       console.log("yo, something changed!", change);
-    })*/.on('paused', function (info) {
+    })*/
+    .on('paused', function (info) {
       console.log("replication was paused,usually because of a lost connection", info);
     }).on('active', function (info) {
       console.log("replication was resumed", info);
@@ -40,7 +45,17 @@ export class TodosProvider {
 
   }
 
+  public logout(): void{
+
+    this._data = [];
+
+    this.db.destroy().then(() => {
+      console.log("database removed");
+    });
+  }
+
   public getTodos(): Promise<any> {
+    debugger;
     if (this._data.length > 0) {
       return Promise.resolve();
     }
