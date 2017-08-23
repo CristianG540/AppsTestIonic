@@ -7,6 +7,7 @@ import { StatusBar } from '@ionic-native/status-bar';
 
 import { MyApp } from './app.component';
 import { TodosProvider } from "../providers/todos/todos";
+import { AuthProvider } from '../providers/auth/auth';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { TodosProvider } from "../providers/todos/todos";
     StatusBar,
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    TodosProvider
+    TodosProvider,
+    AuthProvider
   ]
 })
 export class AppModule {}

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, AlertController, LoadingController } from 'ionic-angular';
 import { TodosProvider } from "../../providers/todos/todos";
+import { AuthProvider } from '../../providers/auth/auth';
 
 @IonicPage()
 @Component({
@@ -11,7 +12,9 @@ export class HomePage {
 
   constructor(
     public navCtrl: NavController,
+    private loadingCtrl: LoadingController,
     private todoService: TodosProvider,
+    private authService: AuthProvider,
     private alertCtrl: AlertController
   ) {
   }
@@ -23,8 +26,20 @@ export class HomePage {
   }
 
   private logout(): void{
-    this.todoService.logout();
-    this.navCtrl.setRoot('LoginPage');
+    let loading = this.loadingCtrl.create({
+      content: 'Loading...'
+    });
+    loading.present();
+
+    this.authService.logout()
+    .then( () => {
+      loading.dismiss();
+      this.navCtrl.setRoot('LoginPage');
+    })
+    .catch( err => {
+      loading.dismiss();
+      console.log.bind(console)
+    })
   }
 
   createTodo() {

@@ -1,12 +1,13 @@
 import { Injectable, ApplicationRef  } from '@angular/core';
 import PouchDB from 'pouchdb';
+import { Todo } from './models/todo';
 
 @Injectable()
 export class TodosProvider {
 
   private db: any;
   private remoteDB: any;
-  private _data: { _id:number, _rev:string, title:string }[] = [];
+  private _data: Todo[] = [];
 
   constructor(
     private appRef: ApplicationRef // lo uso para actualizar la UI cuando se hace un cambio fiera de la ngZone
@@ -37,10 +38,8 @@ export class TodosProvider {
 
   }
 
-  public logout(): void{
-
+  public destroyDB(): void{
     this._data = [];
-
     this.db.destroy().then(() => {
       console.log("database removed");
     });
@@ -154,8 +153,12 @@ export class TodosProvider {
 
   /* **************************** END ************************************** */
 
-  public get data() : any {
+  public get data() : Todo[] {
     return JSON.parse(JSON.stringify(this._data));
+  }
+
+  public set data(data: Todo[]) {
+    this._data = data;
   }
 
 }
