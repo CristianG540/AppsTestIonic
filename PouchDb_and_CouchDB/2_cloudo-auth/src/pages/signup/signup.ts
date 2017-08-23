@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Http, RequestOptions, Headers } from '@angular/http';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { TodosProvider } from "../../providers/todos/todos";
+import 'rxjs/add/operator/toPromise';
 
 @IonicPage()
 @Component({
@@ -41,11 +42,13 @@ export class SignupPage {
     };
     let url = 'http://localhost:3000/auth/register';
     this.http.post(url, JSON.stringify(user), options)
-      .subscribe(res => {
-        debugger;
+      .toPromise()
+      .then(res => {
+        //debugger;
         this.todoService.init(res.json());
         this.navCtrl.setRoot('HomePage');
-      }, (err) => {
+      })
+      .catch( err => {
         console.log(err);
       });
 

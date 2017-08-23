@@ -48,9 +48,6 @@ var config = {
     defaultDBs: {
       private: ['supertest']
     }
-  },
-  providers: {
-    local: true
   }
 }
 

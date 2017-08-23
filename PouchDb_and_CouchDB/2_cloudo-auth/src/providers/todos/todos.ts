@@ -1,6 +1,4 @@
 import { Injectable, ApplicationRef  } from '@angular/core';
-import { Http } from '@angular/http';
-import 'rxjs/add/operator/map';
 import PouchDB from 'pouchdb';
 
 @Injectable()
@@ -11,20 +9,14 @@ export class TodosProvider {
   private _data: { _id:number, _rev:string, title:string }[] = [];
 
   constructor(
-    private http: Http,
-    private appRef: ApplicationRef
+    private appRef: ApplicationRef // lo uso para actualizar la UI cuando se hace un cambio fiera de la ngZone
   ) {
   }
 
   public init(details): void {
 
     this.db= new PouchDB('cloudo');
-    this.remoteDB = new PouchDB(details.userDBs.supertest, {
-      auth: {
-        username: 'admin',
-        password: 'Webmaster2017#@'
-      }
-    });
+    this.remoteDB = new PouchDB(details.userDBs.supertest);
     let replicationOptions = {
       live: true,
       retry: true
@@ -55,7 +47,7 @@ export class TodosProvider {
   }
 
   public getTodos(): Promise<any> {
-    debugger;
+
     if (this._data.length > 0) {
       return Promise.resolve();
     }
@@ -112,6 +104,7 @@ export class TodosProvider {
   }
 
   public handleChange(change): void {
+
     if (change.deleted) {
       // change.id holds the deleted id
       this._onDeleted(change.id);
