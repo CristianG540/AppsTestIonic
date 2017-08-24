@@ -14,7 +14,7 @@ export class AuthProvider {
 
   private config = {
     // An optional URL to API server, by default a current window location is used.
-    serverUrl: 'http://192.168.11.29:3000',
+    serverUrl: Config.SUPERLOGIN_URL,
     // The base URL for the SuperLogin routes with leading and trailing slashes (defaults to '/auth')
     baseUrl: '/auth',
     // Set this to true if you do not want the URL bar host automatically added to the list
