@@ -1,6 +1,13 @@
 import { Injectable } from '@angular/core';
 import superlogin from 'superlogin-client';
+import { Http } from '@angular/http';
+import 'rxjs/add/operator/toPromise';
+import 'rxjs/add/operator/map';
+
+
 import { TodosProvider } from '../todos/todos';
+import { DbProvider } from '../db/db';
+import { Config } from '../config/config';
 
 @Injectable()
 export class AuthProvider {
@@ -29,7 +36,9 @@ export class AuthProvider {
   };
 
   constructor(
-    public todosServ : TodosProvider
+    public todosServ : TodosProvider,
+    public dbServ: DbProvider
+    ,private http: Http
   ) {
     superlogin.configure(this.config);
   }
@@ -41,8 +50,26 @@ export class AuthProvider {
   }
 
   public logout(): Promise<any>{
-    this.todosServ.destroyDB();
     return superlogin.logout();
   }
+
+  public register( registerData ): Promise<any>{
+    return superlogin.register(registerData)
+  }
+
+  public isOnline(): Promise<any> {
+    return this.http.get(`${Config.SUPERLOGIN_URL}/ping`)
+    .toPromise()
+  }
+
+  public get isLogged(): boolean {
+    return superlogin.authenticated();
+  }
+
+  public get dbUrl() : string {
+    return superlogin.getDbUrl('supertest');
+  }
+
+
 
 }

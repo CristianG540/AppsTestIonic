@@ -8,6 +8,8 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { MyApp } from './app.component';
 import { TodosProvider } from "../providers/todos/todos";
 import { AuthProvider } from '../providers/auth/auth';
+import { DbProvider } from '../providers/db/db';
+import { Config } from '../providers/config/config';
 
 @NgModule({
   declarations: [
@@ -27,7 +29,9 @@ import { AuthProvider } from '../providers/auth/auth';
     SplashScreen,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     TodosProvider,
-    AuthProvider
+    AuthProvider,
+    DbProvider,
+    Config
   ]
 })
 export class AppModule {}

@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, AlertController, LoadingController } from 'ionic-angular';
 import { TodosProvider } from "../../providers/todos/todos";
 import { AuthProvider } from '../../providers/auth/auth';
+import { DbProvider } from '../../providers/db/db';
 
 @IonicPage()
 @Component({
@@ -15,7 +16,8 @@ export class HomePage {
     private loadingCtrl: LoadingController,
     private todoService: TodosProvider,
     private authService: AuthProvider,
-    private alertCtrl: AlertController
+    private alertCtrl: AlertController,
+    public dbServ: DbProvider
   ) {
   }
 
@@ -31,19 +33,32 @@ export class HomePage {
     });
     loading.present();
 
-    this.authService.logout()
-    .then( () => {
-      loading.dismiss();
-      this.navCtrl.setRoot('LoginPage');
-    })
-    .catch( err => {
-      loading.dismiss();
-      console.log.bind(console)
-    })
+    this.authService.isOnline()
+      .then(res=>{
+        return this.authService.logout()
+      })
+      .then( () => {
+        loading.dismiss();
+        this.todoService.data = [];
+        this.dbServ.destroyDB();
+        this.navCtrl.setRoot('LoginPage');
+      })
+      .catch(err=>{
+        loading.dismiss();
+        console.log('error en el logout',err);
+        if(err.ok == false || err.message == "Network Error"){
+          this.alertCtrl.create({
+            title: "Ocurrio un error.",
+            message: "Debe estar conectado a la red para desconectarse.",
+            buttons: ['Ok']
+          }).present();
+        }
+      })
+
+
   }
 
   createTodo() {
-
     let prompt = this.alertCtrl.create({
       title: 'Add',
       message: 'What do you need to do?',
@@ -67,9 +82,7 @@ export class HomePage {
         }
       ]
     });
-
     prompt.present();
-
   }
 
   updateTodo(todo) {

@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams, Loading, LoadingController } from 
 import { Http, RequestOptions, Headers } from '@angular/http';
 import { TodosProvider } from "../../providers/todos/todos";
 import { AuthProvider } from '../../providers/auth/auth';
+import { DbProvider } from '../../providers/db/db';
 
 @IonicPage()
 @Component({
@@ -17,12 +18,13 @@ export class LoginPage {
   private loading: Loading;
 
   constructor(
-    public navCtrl: NavController,
+    private navCtrl: NavController,
     private loadingCtrl: LoadingController,
-    public navParams: NavParams,
+    private navParams: NavParams,
     private http: Http,
     private todoService: TodosProvider,
-    private authService: AuthProvider
+    private authService: AuthProvider,
+    private dbServ: DbProvider
   ) {
   }
 
@@ -37,7 +39,7 @@ export class LoginPage {
     .then(res=>{
       console.log(res);
       this.loading.dismiss();
-      this.todoService.init(res);
+      this.dbServ.init(res.userDBs.supertest);
       this.navCtrl.setRoot('HomePage');
     }).catch(err=>{
       console.log(err);

@@ -1,47 +1,22 @@
 import { Injectable, ApplicationRef  } from '@angular/core';
-import PouchDB from 'pouchdb';
+import { Events } from 'ionic-angular';
+
 import { Todo } from './models/todo';
+import { DbProvider } from '../db/db';
 
 @Injectable()
 export class TodosProvider {
 
   private db: any;
-  private remoteDB: any;
   private _data: Todo[] = [];
 
   constructor(
-    private appRef: ApplicationRef // lo uso para actualizar la UI cuando se hace un cambio fiera de la ngZone
+    public dbServ: DbProvider,
+    private appRef: ApplicationRef, // lo uso para actualizar la UI cuando se hace un cambio fiera de la ngZone
+    public evts: Events
   ) {
-  }
-
-  public init(details): void {
-
-    this.db= new PouchDB('cloudo');
-    this.remoteDB = new PouchDB(details.userDBs.supertest);
-    let replicationOptions = {
-      live: true,
-      retry: true
-    };
-    this.db.sync(this.remoteDB, replicationOptions)
-    /*.on('change', function (change) {
-      console.log("yo, something changed!", change);
-    })*/
-    .on('paused', function (info) {
-      console.log("replication was paused,usually because of a lost connection", info);
-    }).on('active', function (info) {
-      console.log("replication was resumed", info);
-    }).on('denied', function (err) {
-      console.log("a document failed to replicate (e.g. due to permissions)", err);
-    }).on('error', function (err) {
-      console.log("totally unhandled error (shouldn't happen)", err);
-    });
-
-  }
-
-  public destroyDB(): void{
-    this._data = [];
-    this.db.destroy().then(() => {
-      console.log("database removed");
+    this.evts.subscribe('db:init', () => {
+      this.db = this.dbServ.db;
     });
   }
 
@@ -53,7 +28,7 @@ export class TodosProvider {
 
     return new Promise( (resolve, reject) => {
 
-      this.db.allDocs({
+      this.dbServ.db.allDocs({
 
         include_docs: true
 

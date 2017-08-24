@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { Http, RequestOptions, Headers } from '@angular/http';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { TodosProvider } from "../../providers/todos/todos";
-import 'rxjs/add/operator/toPromise';
+import { IonicPage, NavController, NavParams, Loading, LoadingController } from 'ionic-angular';
+
+import { DbProvider } from '../../providers/db/db';
+import { AuthProvider } from '../../providers/auth/auth';
 
 @IonicPage()
 @Component({
@@ -17,22 +17,19 @@ export class SignupPage {
   private password: string;
   private confirmPassword: string;
 
+  private loading: Loading;
+
   constructor(
     private navCtrl: NavController,
+    private loadingCtrl: LoadingController,
     private navParams: NavParams,
-    private http: Http,
-    private todoService: TodosProvider
+    private authService: AuthProvider,
+    private dbServ: DbProvider
   ) {
   }
 
-  register() {
-    let headers = new Headers({
-      'Content-Type': 'application/json'
-    });
-    let options = new RequestOptions({
-      headers: headers
-    });
-
+  private register(): void {
+    this.showLoading();
     let user = {
       name: this.name,
       username: this.username,
@@ -40,18 +37,44 @@ export class SignupPage {
       password: this.password,
       confirmPassword: this.confirmPassword
     };
+
+    this.authService.register(user)
+    .then(res=>{
+      console.log(res);
+      this.loading.dismiss();
+      this.dbServ.init(res.userDBs.supertest);
+      this.navCtrl.setRoot('HomePage');
+    }).catch(err=>{
+      console.log(err);
+      this.loading.dismiss();
+    })
+
+    /*
+    let headers = new Headers({
+      'Content-Type': 'application/json'
+    });
+    let options = new RequestOptions({
+      headers: headers
+    });
     let url = 'http://localhost:3000/auth/register';
     this.http.post(url, JSON.stringify(user), options)
       .toPromise()
       .then(res => {
-        //debugger;
-        this.todoService.init(res.json());
+        this.dbServ.init(res.json());
         this.navCtrl.setRoot('HomePage');
       })
       .catch( err => {
         console.log(err);
       });
+    */
 
+  }
+
+  private showLoading(): void {
+    this.loading = this.loadingCtrl.create({
+      content: 'Loading...'
+    });
+    this.loading.present();
   }
 
 }
