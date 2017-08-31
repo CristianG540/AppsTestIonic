@@ -37,8 +37,8 @@ export class AuthProvider {
 
   constructor(
     public todosServ : TodosProvider,
-    public dbServ: DbProvider
-    ,private http: Http
+    public dbServ: DbProvider,
+    private http: Http
   ) {
     superlogin.configure(this.config);
   }

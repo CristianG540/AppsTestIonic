@@ -1,14 +1,54 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Ionic Blank
+      Mi tienda
     </ion-title>
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
-  The world is your oyster.
-  <p>
-    If you get lost, the <a href="http://ionicframework.com/docs/v2">docs</a> will be your guide.
-  </p>
+<ion-content padding class="card-background-page">
+
+  <ion-grid>
+    <ion-row *ngFor="let prod of prodsService.prods; trackBy: trackByProds">
+      <ion-card *ngIf="prod.existencias > 0">
+
+        <img [src]="prod.imagen" [alt]="prod.titulo">
+
+        <ion-card-content text-center>
+          <ion-card-title>
+            {{ prod._id }}
+          </ion-card-title>
+          <p>
+            {{ prod.titulo }}
+          </p>
+        </ion-card-content>
+
+        <ion-row no-padding>
+          <ion-col col-4>
+            <button [navPush]="pushPage" [navParams]="prod" ion-button clear small color="danger" icon-left>
+              <ion-icon name='star'></ion-icon>
+              Info
+            </button>
+          </ion-col>
+          <ion-col col-4>
+            <button  ion-button clear small color="danger" icon-left>
+              <ion-icon name='add'></ion-icon>
+              Add
+            </button>
+          </ion-col>
+          <ion-col col-4 align-self-center text-center>
+            <ion-note>
+              {{ prod.existencias }} {{ prod.unidad | uppercase }}.
+            </ion-note>
+          </ion-col>
+        </ion-row>
+
+      </ion-card>
+    </ion-row>
+  </ion-grid>
+
+  <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
 </ion-content>
