@@ -13,11 +13,9 @@ export class ProductoPage {
 
   constructor(
     private navCtrl: NavController,
-    public navParams: NavParams
+    private navParams: NavParams
   ) {
-  }
-
-  ionViewDidLoad() {
+    this.producto = this.navParams.data;
   }
 
 }
