@@ -1,8 +1,19 @@
 <ion-header>
   <ion-navbar>
+    <ion-buttons end>
+
+      <button ion-button icon-only>
+        <ion-icon name="cart"></ion-icon>
+        <ion-badge class="car-badge" color="danger" *ngIf="cartService.prods.length  > 0">{{ cartService.prods.length }}</ion-badge>
+        &nbsp;
+        &nbsp;
+      </button>
+
+    </ion-buttons>
     <ion-title>
       Mi tienda
     </ion-title>
+
   </ion-navbar>
 </ion-header>
 
@@ -31,7 +42,7 @@
             </button>
           </ion-col>
           <ion-col col-4>
-            <button  ion-button clear small color="danger" icon-left>
+            <button ion-button clear small color="danger" icon-left (click)="addProd(prod)" >
               <ion-icon name='add'></ion-icon>
               Add
             </button>
