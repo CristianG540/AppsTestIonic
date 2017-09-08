@@ -2,9 +2,9 @@
   <ion-navbar>
     <ion-buttons end>
 
-      <button ion-button icon-only>
+      <button ion-button icon-only (click)="cartService.showCart()" >
         <ion-icon name="cart"></ion-icon>
-        <ion-badge class="car-badge" color="danger" *ngIf="cartService.prods.length  > 0">{{ cartService.prods.length }}</ion-badge>
+        <ion-badge class="car-badge" color="danger" *ngIf="cartService.carItems.length  > 0">{{ cartService.carItems.length }}</ion-badge>
         &nbsp;
         &nbsp;
       </button>

@@ -95,7 +95,7 @@ export class ProductosProvider {
           });
           this._prods.push(...prods );
         }
-        console.log(this._prods);
+        console.log("prodsProvider-recuperarPagSgte",this._prods);
         return res;
       });
   }
@@ -148,6 +148,44 @@ export class ProductosProvider {
       }
       return res;
     });
+  }
+
+  public fetchProdsByids( ids: any ): Promise<any>{
+    let options:RequestOptions = Config.CDB_OPTIONS();
+    let params = new URLSearchParams();
+    options.params = params;
+    params.set('include_docs', 'true');
+    return this.http.post(
+      Config.CDB_URL+'/_all_docs',
+      JSON.stringify({
+        "keys" : ids
+      }),
+      options
+    )
+    .map(res=>{
+      let d = res.json();
+      console.log("all_docs ids",d)
+      if (d && d.rows.length > 0) {
+        return _.map(d.rows, (v: any) => {
+          return new Producto(
+            v.doc._id,
+            v.doc.titulo,
+            v.doc.aplicacion,
+            v.doc.imagen,
+            v.doc.categoria,
+            v.doc.marcas,
+            v.doc.unidad,
+            parseInt(v.doc.existencias),
+            v.doc._rev
+          );
+        }) ;
+      }else{
+        return [];
+      }
+
+    })
+    .toPromise()
+
   }
 
   /**

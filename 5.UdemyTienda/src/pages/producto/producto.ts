@@ -28,11 +28,17 @@ export class ProductoPage {
 
   private addProd(): void {
 
-    if(this.cartService.pushProd(this.producto) ){
-      this.showToast("El producto se agrego correctamente");
-    }else{
-      this.showToast("El producto ya esta en el carrito");
-    };
+    this.cartService.pushItem({
+      _id: this.producto._id,
+      cantidad: 1
+    }).then(res=>{
+      this.showToast(`El producto ${res.id} se agrego correctamente`);
+    }).catch(err=>{
+      if(err=="duplicate"){
+        this.showToast(`El producto ya esta en el carrito`);
+      }
+    })
+
   }
 
   private showToast(msg:string): void {

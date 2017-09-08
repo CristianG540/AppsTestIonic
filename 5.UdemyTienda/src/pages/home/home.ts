@@ -61,12 +61,21 @@ export class HomePage {
     this.loading.present();
   }
 
-  private addProd(producto): void {
-    if(this.cartService.pushProd(producto) ){
-      this.showToast("El producto se agrego correctamente");
-    }else{
-      this.showToast("El producto ya esta en el carrito");
-    };
+  private addProd(producto: Producto): void {
+
+    this.cartService.pushItem({
+      _id: producto._id,
+      cantidad: 1
+    }).then(res=>{
+
+      this.showToast(`El producto ${res.id} se agrego correctamente`);
+    }).catch(err=>{
+
+      if(err=="duplicate"){
+        this.showToast(`El producto ya esta en el carrito`);
+      }
+    })
+
   }
 
   private showToast(msg:string): void {
@@ -77,6 +86,10 @@ export class HomePage {
       showCloseButton: true,
       closeButtonText: "cerrar"
     }).present();
+  }
+
+  private deleteDB(){
+    this.cartService.destroyDB();
   }
 
   private trackByProds(index: number, prod: Producto): string {

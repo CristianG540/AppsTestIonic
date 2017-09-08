@@ -2,5 +2,7 @@
   "name": "5.UdemyTienda",
   "app_id": "",
   "type": "ionic-angular",
-  "integrations": {}
+  "integrations": {
+    "cordova": {}
+  }
 }

@@ -8,6 +8,7 @@ import { Config as cg } from "../config/config";
 //Models
 import { Producto } from "../productos/models/producto";
 import { CarItem } from "./models/carItem";
+import { ModalController, Modal } from "ionic-angular";
 
 
 @Injectable()
@@ -17,64 +18,96 @@ export class CarritoProvider {
   private _carItems: CarItem[] = [];
 
   constructor(
+    private modalCtrl : ModalController
   ) {
     if(!this._db){
       this._db = new PouchDB('cart');
+      this.fetchAndRenderAllDocs()
+        .catch(console.log.bind(console));
     }
   }
 
   public fetchAndRenderAllDocs(): Promise<any> {
+
     return this._db.allDocs({
       include_docs: true
     }).then( res => {
       this._carItems = res.rows.map((row) => {
         return new CarItem(
           row.doc._id,
-          row.doc.producto,
           row.doc.cantidad,
           row.doc._rev
         );
       });
-
-      // FALTA HACER ESTO, SEGUIR AQUI
-      this._reactToChanges();
-      resolve();
-
-    }).catch((error) => {
-
-      reject(error);
-
+      console.log("_all_docs carrito pouchDB", res)
+      return res;
     });
+
   }
 
-  public get prods() : Producto[] {
-    return JSON.parse(JSON.stringify(this._prods));
-  }
+  public pushItem(item: CarItem) : Promise<any>{
 
-  public pushProd(prod: Producto) : boolean{
-    /**
-     * hago una busqueda binaria apra saber si el producto esta en el carrito
-     * si ya esta en el carrito, le informo al usuario q no lo puede agregar
-     */
-    let indexPrevProd: number = cg.binarySearch(this._prods, '_id', prod._id);
-    let prevProd: Producto = this._prods[indexPrevProd];
-    if( prevProd && prevProd._id == prod._id ){
-      return false;
-    }else{
+    return new Promise( (resolve, reject) => {
       /**
-       * Lo que hago aqui es usar la funcion "sortedLastIndexBy" de lodash
-       * mas info aqui: "https://lodash.com/docs/4.17.4#sortedLastIndexBy"
-       * con este codigo lo q hago conservar el orden de los productos cada
-       * vez que los voy ingresando, asi a la hora de leerlos ya estan ordenados
-       * y la busqueda binaria funciona full HD
+       * hago una busqueda binaria para saber si el producto esta en el carrito
+       * si ya esta en el carrito, le informo al usuario q no lo puede agregar
        */
-      let i = _.sortedLastIndexBy(this._prods, prod, val => val._id );
-      this._prods.splice(i, 0, prod);
+      let indexPrevItem: number = cg.binarySearch(
+        this._carItems,
+        '_id',
+        item._id
+      );
+      let prevItem: CarItem = this._carItems[indexPrevItem];
+      if( prevItem && prevItem._id == item._id ){
+        reject("duplicate");
+      }else{
+        /**
+         * inserto los datos en la bd local
+         */
+        this._db.put(item)
+          .then(res=>{
+            /**
+             * Lo que hago aqui es usar la funcion "sortedLastIndexBy" de lodash
+             * mas info aqui: "https://lodash.com/docs/4.17.4#sortedLastIndexBy"
+             * con este codigo lo q hago conservar el orden de los productos cada
+             * vez que los voy ingresando, asi a la hora de leerlos ya estan ordenados
+             * y la busqueda binaria funciona full HD
+             */
+            let i = _.sortedLastIndexBy(this._carItems, item, v => v._id );
+            this._carItems.splice(i, 0, item);
+            console.log('prods carrito', this._carItems);
+            resolve(res);
+          })
+          .catch(err=>{
+            reject(err);
+          })
 
-      console.log('prods carrito', this._prods);
-      return true;
-    }
+      }
+
+    })
 
   }
+
+  public destroyDB(): void{
+    this._db.destroy().then(() => {
+      console.log("database removed");
+    })
+    .catch(console.log.bind(console));;
+  }
+
+  public showCart(): Modal{
+    let modal = this.modalCtrl.create("CarritoPage");
+    modal.present();
+    return modal;
+  }
+
+  public get carItems() : CarItem[] {
+    return JSON.parse(JSON.stringify(this._carItems));
+  }
+
+  public get carIdItems(): any {
+    return _.map(this._carItems, "_id");
+  }
+
 
 }

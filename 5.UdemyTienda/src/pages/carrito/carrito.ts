@@ -1,5 +1,14 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import {
+  IonicPage,
+  NavController,
+  NavParams,
+  ViewController
+} from "ionic-angular";
+import { CarritoProvider } from "../../providers/carrito/carrito";
+import { Producto } from "../../providers/productos/models/producto";
+import { ProductosProvider } from '../../providers/productos/productos';
+import { Config } from "../../providers/config/config";
 
 @IonicPage()
 @Component({
@@ -8,11 +17,35 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class CarritoPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  private _prods: Producto[] = [];
+
+  constructor(
+    public navCtrl: NavController,
+    private viewCtrl: ViewController,
+    public navParams: NavParams,
+    private cartServ: CarritoProvider,
+    private prodServ: ProductosProvider,
+    private util: Config
+  ) {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad CarritoPage');
+    let prodsId = this.cartServ.carIdItems;
+    this.prodServ.fetchProdsByids(prodsId)
+      .then((prods: Producto[])=>{
+        this._prods = prods;
+        console.log("prods carrito", prods);
+      })
+      .catch(err=>{
+        this.util.errorHandler(err.message, err);
+      })
+
+  }
+
+  //CONTINUAR AQUI FALTA LISTAR LOS PRODUCTOS EN EL MODAL DEL CARRITO
+
+  closeModal() {
+    this.viewCtrl.dismiss();
   }
 
 }
