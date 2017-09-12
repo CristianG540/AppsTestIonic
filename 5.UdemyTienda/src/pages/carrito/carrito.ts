@@ -3,7 +3,8 @@ import {
   IonicPage,
   NavController,
   NavParams,
-  ViewController
+  ViewController,
+  ToastController
 } from "ionic-angular";
 import { CarritoProvider } from "../../providers/carrito/carrito";
 import { Producto } from "../../providers/productos/models/producto";
@@ -22,6 +23,7 @@ export class CarritoPage {
   constructor(
     public navCtrl: NavController,
     private viewCtrl: ViewController,
+    private toastCtrl: ToastController,
     public navParams: NavParams,
     private cartServ: CarritoProvider,
     private prodServ: ProductosProvider,
@@ -30,22 +32,49 @@ export class CarritoPage {
   }
 
   ionViewDidLoad() {
-    let prodsId = this.cartServ.carIdItems;
-    this.prodServ.fetchProdsByids(prodsId)
-      .then((prods: Producto[])=>{
-        this._prods = prods;
-        console.log("prods carrito", prods);
+    this.reloadProds();
+  }
+
+  private logCarItems(): void {
+    console.log("Los items del carrito: ", this.cartServ.carItems);
+  }
+
+  private deleteItem(prod: Producto): void {
+    this.cartServ.deleteItem(prod)
+      .then(res=>{
+        this.reloadProds();
+        this.showToast(`El producto ${res.id} se elimino de carrito correctamente`);
+        console.log("prod eliminado carrito", res);
       })
       .catch(err=>{
         this.util.errorHandler(err.message, err);
       })
-
   }
-
-  //CONTINUAR AQUI FALTA LISTAR LOS PRODUCTOS EN EL MODAL DEL CARRITO
 
   closeModal() {
     this.viewCtrl.dismiss();
+  }
+
+  private reloadProds(): void {
+    let prodsId = this.cartServ.carIdItems;
+    this.prodServ.fetchProdsByids(prodsId)
+      .then((prods: Producto[])=>{
+        this._prods = prods;
+        console.log("prods carrito", this._prods);
+      })
+      .catch(err=>{
+        this.util.errorHandler(err.message, err);
+      })
+  }
+
+  private showToast(msg:string): void {
+    this.toastCtrl.create({
+      message: msg,
+      duration: 3000,
+      position: 'top',
+      showCloseButton: true,
+      closeButtonText: "cerrar"
+    }).present();
   }
 
 }

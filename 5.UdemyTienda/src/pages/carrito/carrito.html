@@ -13,7 +13,6 @@
 
 
 <ion-content>
-
   <ion-grid *ngIf="cartServ.carItems.length == 0; else elseBlock">
     <ion-row>
       <ion-col text-center class="empty-cart">
@@ -26,32 +25,55 @@
 
   <ng-template #elseBlock>
     <ion-list>
-      <ion-item *ngFor="let prod of _prods" text-wrap>
-        <ion-thumbnail item-left>
-          <img [src]="prod.imagen">
-        </ion-thumbnail>
-        <h4>{{ prod.titulo }}</h4>
-        <ion-row>
-          <ion-col>
-            <p> <b>{{ prod._id }}</b> </p>
-            <p>{{ prod.aplicacion }}</p>
-            <p>{{ 2000 | currency:'USD':true }}</p>
-          </ion-col>
-          <ion-col text-right>
-            <div class="plusminus horiz">
-              <button></button>
-              <input type="number" name="productQty" value="1" min="1" max="10">
-              <button></button>
-            </div>
-          </ion-col>
-        </ion-row>
+      <ion-item-sliding *ngFor="let prod of _prods">
 
-      </ion-item>
+        <ion-item text-wrap>
+          <ion-thumbnail item-left>
+            <img [src]="prod.imagen">
+          </ion-thumbnail>
+          <h4>{{ prod.titulo }}</h4>
+          <ion-row>
+            <ion-col>
+              <p> <b>{{ prod._id }}</b> </p>
+              <p>{{ prod.aplicacion }}</p>
+              <p>{{ 2000 | currency:'USD':true }}</p>
+            </ion-col>
+            <ion-col text-right>
+              <number-picker [num]="cartServ.getProdCant(prod)" (numChange)="cartServ.setProdCant($event, prod)"></number-picker>
+            </ion-col>
+          </ion-row>
+        </ion-item>
+
+        <ion-item-options>
+          <button ion-button icon-right color="danger" (click)="deleteItem(prod)">
+            <ion-icon name="trash"></ion-icon>
+            Borrar
+          </button>
+        </ion-item-options>
+
+      </ion-item-sliding>
     </ion-list>
+
   </ng-template>
 
-  <number-picker></number-picker>
-
-
-
 </ion-content>
+
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons left>
+      <button ion-button icon-right solid color="royal" (click)="logCarItems()">
+        Continuar
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+      </button>
+      <button ion-button icon-right solid color="royal" (click)="reloadProds()">
+          delDB
+        </button>
+    </ion-buttons>
+    <ion-buttons right>
+      <b>Subtotal:</b> {{ cartServ.subTotalPrice | currency:'USD':true }} <br>
+      <b>Iva:</b> {{ cartServ.ivaPrice | currency:'USD':true }} <br>
+      <b>Total:</b> {{ cartServ.subTotalPrice + cartServ.ivaPrice | currency:'USD':true }}
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

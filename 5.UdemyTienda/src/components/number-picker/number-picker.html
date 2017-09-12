@@ -1,4 +1,5 @@
-<!-- Generated template for the NumberPickerComponent component -->
-<div>
-  {{text}}
+<div class="plusminus horiz">
+  <button [disabled]="btnState[0]" (click)="plusMinus('-')"></button>
+  <input type="number" name="productQty" [min]="min" [max]="max" [value]="num" (change)="inputNumChange($event)">
+  <button [disabled]="btnState[1]" (click)="plusMinus('+')"></button>
 </div>
