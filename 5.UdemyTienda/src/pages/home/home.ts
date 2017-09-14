@@ -29,7 +29,7 @@ export class HomePage {
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
     private prodsService: ProductosProvider,
-    private cartService: CarritoProvider,
+    private cartService: CarritoProvider
   ) {
   }
 
@@ -62,19 +62,22 @@ export class HomePage {
   }
 
   private addProd(producto: Producto): void {
-
+    this.showLoading();
     this.cartService.pushItem({
       _id: producto._id,
       cantidad: 1,
       totalPrice: producto.existencias*10
     }).then(res=>{
-
+      this.loading.dismiss();
       this.showToast(`El producto ${res.id} se agrego correctamente`);
     }).catch(err=>{
-
       if(err=="duplicate"){
+        this.loading.dismiss();
         this.showToast(`El producto ya esta en el carrito`);
+      }else{
+        this.errorHandler(err.message, err);
       }
+
     })
 
   }

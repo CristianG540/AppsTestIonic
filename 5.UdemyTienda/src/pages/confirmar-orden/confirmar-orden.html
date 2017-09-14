@@ -1,0 +1,86 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>Confirmar orden</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <ion-grid class="grid-orden">
+
+    <ion-row>
+      <ion-col text-left>
+        <h4>Detalle Pedido:</h4>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col text-left>
+        <div>Subtotal</div>
+      </ion-col>
+      <ion-col text-right>
+        <div>{{ cartServ.subTotalPrice | currency:'USD':true }}</div>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col text-left>
+        <div>IVA</div>
+      </ion-col>
+      <ion-col text-right>
+        <div>{{ cartServ.ivaPrice | currency:'USD':true }}</div>
+      </ion-col>
+    </ion-row>
+    <hr>
+    <ion-row>
+      <ion-col text-left>
+        <div>Total</div>
+      </ion-col>
+      <ion-col text-right>
+        <div>{{ cartServ.subTotalPrice + cartServ.ivaPrice | currency:'USD':true }}</div>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+
+  <form [formGroup]="ordenForm" (ngSubmit)="onSubmit()" >
+    <ion-item>
+      <ion-label floating >Observaciones</ion-label>
+      <ion-textarea formControlName="observaciones" autosize></ion-textarea>
+    </ion-item>
+    <ion-item >
+      <ion-label floating>Buscar cliente</ion-label>
+      <ion-input type="text" formControlName="cliente"></ion-input>
+    </ion-item>
+  </form>
+  <br>
+
+  <form [formGroup]="newClient" (ngSubmit)="onSubmit()" >
+    <h4>Cliente Nuevo</h4>
+    <ion-item>
+      <ion-label >Nombre</ion-label>
+      <ion-input type="text" formControlName="nombre"></ion-input>
+    </ion-item>
+    <ion-item >
+      <ion-label >Codigo Cliente</ion-label>
+      <ion-input type="text" formControlName="codCliente"></ion-input>
+    </ion-item>
+  </form>
+
+  <br>
+
+  <ion-auto-complete [dataProvider]="clienteServ"></ion-auto-complete>
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-buttons left>
+      <button ion-button icon-right solid>
+        Finalizar
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>

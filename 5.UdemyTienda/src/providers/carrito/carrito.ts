@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Events } from 'ionic-angular';
 import _ from 'lodash';
 import PouchDB from 'pouchdb';
 
@@ -8,7 +9,6 @@ import { Config as cg } from "../config/config";
 //Models
 import { Producto } from "../productos/models/producto";
 import { CarItem } from "./models/carItem";
-import { ModalController, Modal } from "ionic-angular";
 
 
 @Injectable()
@@ -18,12 +18,17 @@ export class CarritoProvider {
   private _carItems: CarItem[] = [];
 
   constructor(
-    private modalCtrl : ModalController
+    public evts: Events,
+    private util : cg
   ) {
     if(!this._db){
+      this.util.showLoading();
       this._db = new PouchDB('cart');
       this.fetchAndRenderAllDocs()
-        .then( res => this._reactToChanges() )
+        .then( res => {
+          this._reactToChanges()
+          this.util.loading.dismiss()
+        })
         .catch(console.log.bind(console));
     }
   }
@@ -83,6 +88,9 @@ export class CarritoProvider {
     let doc = this._carItems[index];
     if (doc && doc._id == id) {
       this._carItems.splice(index, 1);
+      //lanzo este evento para actualizar la pagina cuando un item
+      //del carrito se elimina
+      this.evts.publish('cart:change');
     }
   }
 
@@ -153,7 +161,6 @@ export class CarritoProvider {
     );
     return this._db.remove(this._carItems[carItemIndex])
       .then(res=>{
-        this._carItems.splice(carItemIndex, 1);
         return res;
       });
   }
@@ -176,14 +183,13 @@ export class CarritoProvider {
     try {
       return this.carItems[carItemIndex].cantidad
     } catch (err) {
-      /// MIRAR BIEN ESTO
       console.log("err getProdCant",err)
       return 0
     }
 
   }
 
-  public setProdCant(cantPedido : number, prod: Producto) {
+  public setProdCant(cantPedido : number, prod: Producto): void {
     // Mirar aqui mostro
     let carItemIndex = cg.binarySearch(
       this.carItems,
@@ -204,12 +210,6 @@ export class CarritoProvider {
       console.log("database removed");
     })
     .catch(console.log.bind(console));;
-  }
-
-  public showCart(): Modal{
-    let modal = this.modalCtrl.create("CarritoPage");
-    modal.present();
-    return modal;
   }
 
   ///////////////////////// GETTERS and SETTERS ////////////////////
@@ -263,7 +263,5 @@ export class CarritoProvider {
   public get ivaPrice() : number {
     return this.subTotalPrice*19/100;
   }
-
-
 
 }

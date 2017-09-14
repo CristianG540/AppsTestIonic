@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
+import { CarritoProvider } from "../../providers/carrito/carrito";
 
 @IonicPage()
 @Component({
@@ -11,8 +12,18 @@ export class TabsPage {
   home = 'HomePage'
   categorias = 'CategoriasPage'
   ordenes = 'OrdenesPage'
+  carrito = 'CarritoPage'
   buscar = '4Page'
 
-  constructor(public navCtrl: NavController) {}
+  constructor(
+    public navCtrl: NavController,
+    private cartService: CarritoProvider
+  ) {
+  }
+
+  public get itemsCart() : number {
+    return this.cartService.carItems.length;
+  }
+
 
 }

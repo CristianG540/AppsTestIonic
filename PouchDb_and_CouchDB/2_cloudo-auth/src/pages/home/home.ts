@@ -54,8 +54,6 @@ export class HomePage {
           }).present();
         }
       })
-
-
   }
 
   createTodo() {

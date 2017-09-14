@@ -4,7 +4,8 @@ import {
   NavController,
   NavParams,
   ViewController,
-  ToastController
+  ToastController,
+  Events
 } from "ionic-angular";
 import { CarritoProvider } from "../../providers/carrito/carrito";
 import { Producto } from "../../providers/productos/models/producto";
@@ -19,19 +20,26 @@ import { Config } from "../../providers/config/config";
 export class CarritoPage {
 
   private _prods: Producto[] = [];
+  private confirmarOrdenPage: string = 'ConfirmarOrdenPage';
 
   constructor(
     public navCtrl: NavController,
     private viewCtrl: ViewController,
     private toastCtrl: ToastController,
     public navParams: NavParams,
+    public evts: Events,
     private cartServ: CarritoProvider,
     private prodServ: ProductosProvider,
     private util: Config
   ) {
+
+    this.evts.subscribe('cart:change', () => {
+      this.reloadProds();
+      console.log("se lanzo el evento change");
+    });
   }
 
-  ionViewDidLoad() {
+  ionViewDidEnter() {
     this.reloadProds();
   }
 
@@ -40,19 +48,16 @@ export class CarritoPage {
   }
 
   private deleteItem(prod: Producto): void {
+    this.util.showLoading();
     this.cartServ.deleteItem(prod)
       .then(res=>{
-        this.reloadProds();
+        this.util.loading.dismiss();
         this.showToast(`El producto ${res.id} se elimino de carrito correctamente`);
         console.log("prod eliminado carrito", res);
       })
       .catch(err=>{
         this.util.errorHandler(err.message, err);
       })
-  }
-
-  closeModal() {
-    this.viewCtrl.dismiss();
   }
 
   private reloadProds(): void {

@@ -10,6 +10,7 @@ import { CarritoProvider } from '../providers/carrito/carrito';
 import { ProductosProvider } from '../providers/productos/productos';
 import { UsuarioProvider } from '../providers/usuario/usuario';
 import { Config } from '../providers/config/config';
+import { ClientesProvider } from '../providers/clientes/clientes';
 
 
 @NgModule({
@@ -32,7 +33,8 @@ import { Config } from '../providers/config/config';
     CarritoProvider,
     ProductosProvider,
     UsuarioProvider,
-    Config
+    Config,
+    ClientesProvider
   ]
 })
 export class AppModule {}

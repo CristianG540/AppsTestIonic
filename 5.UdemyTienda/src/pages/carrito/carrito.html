@@ -1,14 +1,7 @@
 <ion-header>
-
-  <ion-toolbar>
-    <ion-buttons right>
-      <button ion-button (click)="closeModal()">
-        <ion-icon name="md-close"></ion-icon>
-      </button>
-    </ion-buttons>
+  <ion-navbar>
     <ion-title>Carrito</ion-title>
-  </ion-toolbar>
-
+  </ion-navbar>
 </ion-header>
 
 
@@ -62,17 +55,17 @@
 <ion-footer>
   <ion-toolbar>
     <ion-buttons left>
-      <button ion-button icon-right solid color="royal" (click)="logCarItems()">
+      <button ion-button icon-right solid color="royal" [navPush]="confirmarOrdenPage">
         Continuar
         <ion-icon name="checkmark-circle-outline"></ion-icon>
       </button>
-      <button ion-button icon-right solid color="royal" (click)="reloadProds()">
+      <button ion-button icon-right solid color="royal" (click)="cartServ.destroyDB()">
           delDB
         </button>
     </ion-buttons>
     <ion-buttons right>
       <b>Subtotal:</b> {{ cartServ.subTotalPrice | currency:'USD':true }} <br>
-      <b>Iva:</b> {{ cartServ.ivaPrice | currency:'USD':true }} <br>
+      <b>IVA:</b> {{ cartServ.ivaPrice | currency:'USD':true }} <br>
       <b>Total:</b> {{ cartServ.subTotalPrice + cartServ.ivaPrice | currency:'USD':true }}
     </ion-buttons>
   </ion-toolbar>
