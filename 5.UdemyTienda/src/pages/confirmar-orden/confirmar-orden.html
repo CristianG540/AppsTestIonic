@@ -41,46 +41,54 @@
         <div>{{ cartServ.subTotalPrice + cartServ.ivaPrice | currency:'USD':true }}</div>
       </ion-col>
     </ion-row>
-
   </ion-grid>
 
-  <form [formGroup]="ordenForm" (ngSubmit)="onSubmit()" >
-    <ion-item>
-      <ion-label floating >Observaciones</ion-label>
-      <ion-textarea formControlName="observaciones" autosize></ion-textarea>
-    </ion-item>
-    <ion-item >
-      <ion-label floating>Buscar cliente</ion-label>
-      <ion-input type="text" formControlName="cliente"></ion-input>
-    </ion-item>
-  </form>
-  <br>
+    <form [formGroup]="ordenForm" (ngSubmit)="onSubmit()"  >
+      <ion-item>
+        <ion-label floating >Observaciones</ion-label>
+        <ion-textarea formControlName="observaciones" autosize></ion-textarea>
+      </ion-item>
+      <ion-item *ngIf="!newClientFlag; else elseBlock">
+        <ion-label floating>Buscar cliente</ion-label>
+        <ion-input (click)="showAddressModal()" formControlName="cliente" type="text"></ion-input>
+      </ion-item>
+    </form>
+  <ng-template #elseBlock>
 
-  <form [formGroup]="newClient" (ngSubmit)="onSubmit()" >
-    <h4>Cliente Nuevo</h4>
-    <ion-item>
-      <ion-label >Nombre</ion-label>
-      <ion-input type="text" formControlName="nombre"></ion-input>
-    </ion-item>
-    <ion-item >
-      <ion-label >Codigo Cliente</ion-label>
-      <ion-input type="text" formControlName="codCliente"></ion-input>
-    </ion-item>
-  </form>
+      <form [formGroup]="newClient" (ngSubmit)="onSubmit()" margin-top >
+        <ion-item >
+          <strong>Cliente Nuevo</strong>
+        </ion-item>
+        <ion-item>
+          <ion-label >Nombre</ion-label>
+          <ion-input type="text" formControlName="nombre"></ion-input>
+        </ion-item>
+        <ion-item >
+          <ion-label >Codigo Cliente</ion-label>
+          <ion-input type="text" formControlName="codCliente"></ion-input>
+        </ion-item>
+      </form>
 
-  <br>
+  </ng-template>
 
-  <ion-auto-complete [dataProvider]="clienteServ"></ion-auto-complete>
 
 </ion-content>
 
 <ion-footer>
   <ion-toolbar>
     <ion-buttons left>
-      <button ion-button icon-right solid>
+      <button ion-button icon-right solid color="secondary">
         Finalizar
         <ion-icon name="checkmark-circle-outline"></ion-icon>
       </button>
+      <button ion-button icon-right solid color="secondary">
+          indexar
+        </button>
     </ion-buttons>
+    <ion-buttons right>
+        <button ion-button icon-only solid ion-button (click)="newClientFlag = !newClientFlag" tooltip="Crear un cliente nuevo" positionV="top" event="press">
+          <ion-icon name="person-add"></ion-icon>
+        </button>
+      </ion-buttons>
   </ion-toolbar>
 </ion-footer>

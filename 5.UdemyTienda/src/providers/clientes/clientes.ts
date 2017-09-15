@@ -22,10 +22,14 @@ export class ClientesProvider {
     private util : cg
   ) {
     PouchDB.plugin(require('pouchdb-quick-search'))
-    if(!this._db){
       //this.util.showLoading();
       this._db = new PouchDB('cliente');
-      this._remoteDB = new PouchDB('http://localhost:5984/clientes');
+      this._remoteDB = new PouchDB(cg.CDB_URL_CLIENTES, {
+        auth: {
+          username: 'admin',
+          password: 'admin'
+        }
+      });
       let replicationOptions = {
         live: true,
         retry: true
@@ -35,7 +39,7 @@ export class ClientesProvider {
         console.log("yo, something changed!", change);
       })*/
       .on('paused', function (info) {
-        console.log("replication was paused,usually because of a lost connection", info);
+        console.log("replication ", info);
       }).on('active', function (info) {
         console.log("replication was resumed", info);
       }).on('denied', function (err) {
@@ -44,19 +48,30 @@ export class ClientesProvider {
         console.log("totally unhandled error (shouldn't happen)", err);
       });
 
-      this._db.search({
-        query: 'DESVARE',
-        fields: ['nombre_cliente'],
-        include_docs: true,
-        highlighting: true,
-        build: true
-      }).then(res => {
-        console.log('rama',res)
-      }).catch(console.log.bind(console))
-
-    }
+      this.fetchAndRenderAllDocs()
   }
 
+  public searchCliente(query: string): Promise<any> {
+    /**
+     * Para mas informacion sobre este plugin la pagina principal:
+     * https://github.com/pouchdb-community/pouchdb-quick-search
+     */
+    return this._db.search({
+      query: query,
+      fields: ['nombre_cliente'],
+      limit: 50,
+      include_docs: true,
+      highlighting: true,
+      mm: '50%'
+    })
+  }
+
+  public indexDbClientes(): Promise<any>{
+    return this._db.search({
+      fields: ['nombre_cliente'],
+      build: true
+    })
+  }
 
 
   /** *************** Manejo de el estado de la ui    ********************** */
@@ -76,9 +91,9 @@ export class ClientesProvider {
           row.doc._rev
         );
       });
-      console.log("_all_docs clientes pouchDB", res)
+      console.log("_all_docs clientes pouchDB", res.total_rows)
       return res;
-    });
+    }).catch(console.log.bind(console));
   }
 
   private _reactToChanges(): void {
