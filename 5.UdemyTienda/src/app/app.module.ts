@@ -12,6 +12,7 @@ import { UsuarioProvider } from '../providers/usuario/usuario';
 import { Config } from '../providers/config/config';
 import { ClientesProvider } from '../providers/clientes/clientes';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { OrdenProvider } from '../providers/orden/orden';
 
 
 @NgModule({
@@ -36,7 +37,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     ProductosProvider,
     UsuarioProvider,
     Config,
-    ClientesProvider
+    ClientesProvider,
+    OrdenProvider
   ]
 })
 export class AppModule {}

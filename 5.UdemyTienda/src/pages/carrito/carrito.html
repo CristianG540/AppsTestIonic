@@ -55,7 +55,7 @@
 <ion-footer>
   <ion-toolbar>
     <ion-buttons left>
-      <button ion-button icon-right solid color="royal" [navPush]="confirmarOrdenPage">
+      <button ion-button icon-right solid color="royal" [navPush]="confirmarOrdenPage" [disabled]="cartServ.carItems.length == 0">
         Continuar
         <ion-icon name="checkmark-circle-outline"></ion-icon>
       </button>

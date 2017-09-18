@@ -1,13 +1,19 @@
 import { Injectable } from '@angular/core';
 import { Headers, RequestOptions } from '@angular/http';
-import { Loading, AlertController, LoadingController } from "ionic-angular";
+import {
+  Loading,
+  AlertController,
+  LoadingController,
+  ToastController
+} from "ionic-angular";
 
 @Injectable()
 export class Config {
   public loading: Loading;
   constructor(
     private alertCtrl: AlertController,
-    private loadingCtrl: LoadingController
+    private loadingCtrl: LoadingController,
+    private toastCtrl: ToastController,
   ){
   }
 
@@ -57,6 +63,16 @@ export class Config {
       content: 'Espere por favor...'
     });
     this.loading.present();
+  }
+
+  public showToast(msg:string): void {
+    this.toastCtrl.create({
+      message: msg,
+      duration: 3000,
+      position: 'top',
+      showCloseButton: true,
+      closeButtonText: "cerrar"
+    }).present();
   }
 
 }

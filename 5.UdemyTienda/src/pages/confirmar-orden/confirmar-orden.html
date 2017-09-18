@@ -49,8 +49,11 @@
         <ion-textarea formControlName="observaciones" autosize></ion-textarea>
       </ion-item>
       <ion-item *ngIf="!newClientFlag; else elseBlock">
-        <ion-label floating>Buscar cliente</ion-label>
-        <ion-input (click)="showAddressModal()" formControlName="cliente" type="text"></ion-input>
+        <ion-label>Cliente</ion-label>
+        <ion-input formControlName="cliente" type="text"></ion-input>
+        <button ion-button item-right icon-only clear tappable (click)="showAddressModal()">
+          <ion-icon name="search"></ion-icon>
+        </button>
       </ion-item>
     </form>
   <ng-template #elseBlock>
@@ -77,13 +80,10 @@
 <ion-footer>
   <ion-toolbar>
     <ion-buttons left>
-      <button ion-button icon-right solid color="secondary">
+      <button ion-button icon-right solid color="secondary" [disabled]="!formStatus" (click)="onSubmit()">
         Finalizar
         <ion-icon name="checkmark-circle-outline"></ion-icon>
       </button>
-      <button ion-button icon-right solid color="secondary">
-          indexar
-        </button>
     </ion-buttons>
     <ion-buttons right>
         <button ion-button icon-only solid ion-button (click)="newClientFlag = !newClientFlag" tooltip="Crear un cliente nuevo" positionV="top" event="press">

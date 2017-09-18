@@ -207,6 +207,7 @@ export class CarritoProvider {
 
   public destroyDB(): void{
     this._db.destroy().then(() => {
+      this._carItems = [];
       console.log("database removed");
     })
     .catch(console.log.bind(console));;
@@ -263,5 +264,18 @@ export class CarritoProvider {
   public get ivaPrice() : number {
     return this.subTotalPrice*19/100;
   }
+
+  /**
+   * Getter que me recupera el total del valor de los productos en el carrito
+   * incluyendo el iva
+   *
+   * @readonly
+   * @type {number}
+   * @memberof CarritoProvider
+   */
+  public get totalPrice() : number {
+    return this.subTotalPrice + this.ivaPrice;
+  }
+
 
 }
