@@ -1,6 +1,5 @@
 import { Orden } from './models/orden';
-import { Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { Injectable, ApplicationRef } from "@angular/core";
 import { Events } from 'ionic-angular';
 import PouchDB from 'pouchdb';
 
@@ -15,12 +14,24 @@ export class OrdenProvider {
   private _ordenes: Orden[] = [];
 
   constructor(
-    public evts: Events,
+    private appRef: ApplicationRef, // lo uso para actualizar la UI cuando se hace un cambio fiera de la ngZone
+    private evts: Events,
     private util : cg
   ) {
     if(!this._db){
-      this._db = new PouchDB('ordenes');
+      this.initDB();
     }
+  }
+
+  public initDB(){
+    this.util.showLoading();
+    this._db = new PouchDB('ordenes');
+    this.fetchAndRenderAllDocs()
+      .then( res => {
+        this._reactToChanges()
+        this.util.loading.dismiss()
+      })
+      .catch(console.log.bind(console));
   }
 
   public fetchAndRenderAllDocs(): Promise<any> {
@@ -48,6 +59,15 @@ export class OrdenProvider {
     return this._db.put(orden);
   }
 
+  public destroyDB(): void{
+    this._db.destroy().then(() => {
+      this._ordenes = [];
+      console.log("database removed");
+      this.initDB();
+    })
+    .catch(console.log.bind(console));
+  }
+
   /** *************** Manejo de el estado de la ui    ********************** */
   private _reactToChanges(): void {
     this._db.changes({
@@ -64,6 +84,14 @@ export class OrdenProvider {
         // change.doc holds the new doc
         this._onUpdatedOrInserted(change.doc);
       }
+      /**
+       * Actualiza la interfaz de usuario
+       * https://angular.io/api/core/ApplicationRef
+       * https://goo.gl/PDi6iM
+       */
+      this.appRef.tick();
+      //lanzo un evento para informar quehubo un cambio en las ordenes
+      this.evts.publish('orden:change');
     })
     .on( 'error', console.log.bind(console));
   }
@@ -77,9 +105,7 @@ export class OrdenProvider {
     let doc = this._ordenes[index];
     if (doc && doc._id == id) {
       this._ordenes.splice(index, 1);
-      //lanzo este evento para actualizar la pagina cuando un item
-      //del carrito se elimina
-      this.evts.publish('orden:change');
+
     }
   }
 
@@ -95,9 +121,6 @@ export class OrdenProvider {
     } else { // insert
       this._ordenes.splice(index, 0, newDoc);
     }
-    //lanzo este evento para actualizar la pagina cuando un item
-    //del carrito se elimina
-    this.evts.publish('orden:change');
   }
   /** *********** Fin Manejo de el estado de la ui    ********************** */
 

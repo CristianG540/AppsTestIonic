@@ -1,7 +1,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>ordenes</ion-title>
+    <ion-title>Ordenes</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -9,8 +9,10 @@
 
 <ion-content padding>
   <ion-list >
-    <ion-item *ngFor="let orden of ordenServ.ordenes">
-      {{ orden?._id }}
+    <ion-item *ngFor="let orden of ordenServ.ordenes; let i=index">
+      <b>{{ i + 1 }}</b> {{ orden?._id }}
     </ion-item>
   </ion-list>
+  <br>
+  <button ion-button (click)="deleteDB()">destroy db</button>
 </ion-content>

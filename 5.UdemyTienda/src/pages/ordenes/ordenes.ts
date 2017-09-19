@@ -23,4 +23,8 @@ export class OrdenesPage {
       .catch(console.log.bind(console))
   }
 
+  public deleteDB(): void {
+    this.ordenServ.destroyDB();
+  }
+
 }

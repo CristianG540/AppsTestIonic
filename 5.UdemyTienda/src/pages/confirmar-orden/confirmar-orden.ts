@@ -11,6 +11,9 @@ import { FormGroup, FormArray, FormBuilder, Validators  } from "@angular/forms";
 import { CarritoProvider } from "../../providers/carrito/carrito";
 import { ClientesProvider } from "../../providers/clientes/clientes";
 import { OrdenProvider } from "../../providers/orden/orden";
+import { Config as cg } from "../../providers/config/config";
+
+//Models
 import { Orden } from "../../providers/orden/models/orden";
 import { CarItem } from '../../providers/carrito/models/carItem';
 
@@ -32,7 +35,8 @@ export class ConfirmarOrdenPage {
     private fb: FormBuilder,
     private cartServ: CarritoProvider,
     private clienteServ: ClientesProvider,
-    private ordenServ: OrdenProvider
+    private ordenServ: OrdenProvider,
+    private util: cg
   ) {
   }
 
@@ -57,44 +61,57 @@ export class ConfirmarOrdenPage {
     let modal = this.modalCtrl.create("AutocompletePage");
     let me = this;
     modal.onDidDismiss(data => {
-       this.ordenForm.controls['cliente'].setValue(data);
+      if(data){
+        this.ordenForm.controls['cliente'].setValue(data);
+      }
     });
     modal.present();
   }
 
   private onSubmit(): void {
+    this.util.showLoading();
     /**
      * recupero los items del carrito para guardarlos en la orden
      */
     let carItems: CarItem[] = this.cartServ.carItems;
+    let orden: Orden;
     let observaciones = this.ordenForm.get('observaciones').value;
 
     if (!this.newClientFlag && this.ordenForm.valid) {
       let form = JSON.parse(JSON.stringify(this.ordenForm.value));
-      let orden: Orden = {
+      orden = {
         _id : Date.now().toString(),
         nitCliente: form.cliente,
         observaciones: observaciones,
         items: carItems,
         total: this.cartServ.totalPrice
       }
-      this.ordenServ.pushItem(orden);
-      console.log('form submitted with nit');
     }
-
     if (this.newClientFlag && this.newClient.valid) {
       let form = JSON.parse(JSON.stringify(this.newClient.value));
-      let orden: Orden = {
+      orden = {
         _id : Date.now().toString(),
         newClient : form,
         observaciones: observaciones,
         items: carItems,
         total: this.cartServ.totalPrice
       }
-      this.ordenServ.pushItem(orden)
-      console.log('form submitted new client');
     }
+    this.ordenServ.pushItem(orden)
+      .then(res=>{
+        this.util.showToast('La orden se realizo con exito.')
 
+        /** Vacio el carrito y envio el usuario al tab de ordenes */
+        this.cartServ.destroyDB();
+        this.navCtrl.popToRoot();
+        this.navCtrl.parent.select(3);
+        /** *** *** *** *** *** *** *** *** *** *** *** *** ***   */
+
+        this.util.loading.dismiss();
+      })
+      .catch(err=>{
+        this.util.errorHandler(err.message, err);
+      })
   }
 
   public get formStatus() : boolean {

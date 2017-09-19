@@ -22,15 +22,19 @@ export class CarritoProvider {
     private util : cg
   ) {
     if(!this._db){
-      this.util.showLoading();
-      this._db = new PouchDB('cart');
-      this.fetchAndRenderAllDocs()
-        .then( res => {
-          this._reactToChanges()
-          this.util.loading.dismiss()
-        })
-        .catch(console.log.bind(console));
+      this.initDB();
     }
+  }
+
+  public initDB(){
+    this.util.showLoading();
+    this._db = new PouchDB('cart');
+    this.fetchAndRenderAllDocs()
+      .then( res => {
+        this._reactToChanges()
+        this.util.loading.dismiss()
+      })
+      .catch(console.log.bind(console));
   }
 
   /** *************** Manejo de el estado de la ui    ********************** */
@@ -209,8 +213,9 @@ export class CarritoProvider {
     this._db.destroy().then(() => {
       this._carItems = [];
       console.log("database removed");
+      this.initDB();
     })
-    .catch(console.log.bind(console));;
+    .catch(console.log.bind(console));
   }
 
   ///////////////////////// GETTERS and SETTERS ////////////////////

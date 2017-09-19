@@ -43,7 +43,7 @@
     </ion-row>
   </ion-grid>
 
-    <form [formGroup]="ordenForm" (ngSubmit)="onSubmit()"  >
+    <form [formGroup]="ordenForm" >
       <ion-item>
         <ion-label floating >Observaciones</ion-label>
         <ion-textarea formControlName="observaciones" autosize></ion-textarea>
@@ -58,7 +58,7 @@
     </form>
   <ng-template #elseBlock>
 
-      <form [formGroup]="newClient" (ngSubmit)="onSubmit()" margin-top >
+      <form [formGroup]="newClient" margin-top >
         <ion-item >
           <strong>Cliente Nuevo</strong>
         </ion-item>
