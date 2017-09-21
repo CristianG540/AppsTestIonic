@@ -1,11 +1,12 @@
-import { Orden } from './models/orden';
 import { Injectable, ApplicationRef } from "@angular/core";
 import { Events } from 'ionic-angular';
 import PouchDB from 'pouchdb';
+import _ from 'lodash';
 
 //Providers
 import { Config as cg } from "../config/config";
-
+//Models
+import { Orden } from './models/orden';
 
 @Injectable()
 export class OrdenProvider {
@@ -40,14 +41,7 @@ export class OrdenProvider {
       include_docs: true
     }).then( res => {
       this._ordenes = res.rows.map((row) => {
-        return new Orden(
-          row.doc._id,
-          row.doc.nitCliente,
-          row.doc.observaciones,
-          row.doc.items,
-          row.doc.total,
-          row.doc._rev
-        );
+        return row.doc;
       });
       console.log("_all_docs ordenes pouchDB", res)
       return res;
@@ -135,7 +129,7 @@ export class OrdenProvider {
    * @memberof OrdenProvider
    */
   public get ordenes() : Orden[] {
-    return JSON.parse(JSON.stringify(this._ordenes));
+    return JSON.parse(JSON.stringify( _.orderBy(this._ordenes, '_id', 'desc') ));
   }
 
 }

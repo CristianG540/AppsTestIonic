@@ -11,6 +11,8 @@ import { OrdenProvider } from "../../providers/orden/orden";
 })
 export class OrdenesPage {
 
+  private ordenesDetallePage = 'OrdenesDetallePage';
+
   constructor(
     public navCtrl: NavController,
     public navParams: NavParams,

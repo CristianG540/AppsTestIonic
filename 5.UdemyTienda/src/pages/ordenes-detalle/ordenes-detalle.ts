@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import _ from "lodash";
 
-/**
- * Generated class for the OrdenesDetallePage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
+//Providers
+import { ProductosProvider } from "../../providers/productos/productos";
+import { Config as cg} from "../../providers/config/config";
+//Models
+import { Producto } from "../../providers/productos/models/producto";
+import { CarItem } from "../../providers/carrito/models/carItem";
 
 @IonicPage()
 @Component({
@@ -15,11 +16,50 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class OrdenesDetallePage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  private _prods: any = [];
+  private _itemsOrder: CarItem[] = [];
+  private _total: number = 0;
+  private _cliente: string;
+  private _observacion: string;
+
+  constructor(
+    private navParams: NavParams,
+    private prodServ: ProductosProvider,
+    private util: cg
+  ) {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad OrdenesDetallePage');
+    this.util.showLoading();
+    console.log('ionViewDidLoad OrdenesDetallePage', this.navParams.data);
+    this._itemsOrder = this.navParams.data.items;
+    this._total = this.navParams.data.total;
+    this._cliente = (this.navParams.data.nitCliente) ? this.navParams.data.nitCliente : this.navParams.data.newClient.codCliente;
+    this._observacion = this.navParams.data.observaciones;
+    let prodsId = _.map(this._itemsOrder, "_id");
+
+    this.prodServ.fetchProdsByids(prodsId)
+      .then((prods: Producto[])=>{
+
+        this._prods = _.map(prods, (prod: Producto) => {
+          let itemId = cg.binarySearch(this._itemsOrder, '_id', prod._id);
+          return {
+            _id    : prod._id,
+            titulo : prod.titulo,
+            imagen : prod.imagen,
+            cant   : this._itemsOrder[itemId].cantidad,
+            total  : this._itemsOrder[itemId].totalPrice
+          }
+        });
+        this.util.loading.dismiss();
+
+
+      })
+      .catch(err=>{
+        this.util.errorHandler(err.message, err);
+      })
   }
+
+
 
 }

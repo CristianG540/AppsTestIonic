@@ -31,7 +31,7 @@
       </ion-col>
     </ion-row>
     <ion-row>
-      <button ion-button block icon-start (click)="addProd()" >
+      <button ion-button block icon-start (click)="addProd()" [disabled]="producto.existencias == 0" >
         <ion-icon name="cart"></ion-icon>
         Agregar al carrito
       </button>

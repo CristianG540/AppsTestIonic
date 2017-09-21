@@ -13,7 +13,7 @@ export class TabsPage {
   categorias = 'CategoriasPage'
   ordenes = 'OrdenesPage'
   carrito = 'CarritoPage'
-  buscar = '4Page'
+  buscar = 'SearchProdPage'
 
   constructor(
     public navCtrl: NavController,

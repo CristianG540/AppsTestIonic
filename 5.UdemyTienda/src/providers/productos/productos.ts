@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http, RequestOptions, Response, URLSearchParams } from '@angular/http';
 import _ from 'lodash';
+import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
 
@@ -186,6 +187,43 @@ export class ProductosProvider {
     })
     .toPromise()
 
+  }
+
+  public searchAutocomplete(query: string): Observable<Producto[]> {
+    /**
+     * Para mas informacion sobre este plugin la pagina principal:
+     * https://github.com/pouchdb-community/pouchdb-quick-search
+     */
+    query = query.toUpperCase();
+    let options:RequestOptions = Config.CDB_OPTIONS();
+    let params = new URLSearchParams();
+    options.params = params;
+    params.set('include_docs', 'true');
+    params.set('startkey', `"${query}"`);
+    params.set('endkey', `"${query+"\uffff"}"`);
+    params.set('limit', '30');
+    return this.http.get(Config.CDB_URL+'/_all_docs',options)
+    .map(res=>{
+      let d = res.json();
+      if (d && d.rows.length > 0) {
+        return _.map(d.rows, (v: any) => {
+          return new Producto(
+            v.doc._id,
+            v.doc.titulo,
+            v.doc.aplicacion,
+            v.doc.imagen,
+            v.doc.categoria,
+            v.doc.marcas,
+            v.doc.unidad,
+            parseInt(v.doc.existencias),
+            v.doc._rev
+          );
+        }) ;
+      }else{
+        return [];
+      }
+
+    })
   }
 
   /**

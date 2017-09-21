@@ -99,7 +99,6 @@ export class ConfirmarOrdenPage {
     }
     this.ordenServ.pushItem(orden)
       .then(res=>{
-        this.util.showToast('La orden se realizo con exito.')
 
         /** Vacio el carrito y envio el usuario al tab de ordenes */
         this.cartServ.destroyDB();
