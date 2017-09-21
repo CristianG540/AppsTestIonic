@@ -32,7 +32,7 @@
               <p>{{ 2000 | currency:'USD':true }}</p>
             </ion-col>
             <ion-col text-right>
-              <number-picker [num]="cartServ.getProdCant(prod)" (numChange)="cartServ.setProdCant($event, prod)"></number-picker>
+              <number-picker [num]="cartServ.getProdCant(prod)" [max]="prod.existencias" (numChange)="cartServ.setProdCant($event, prod)"></number-picker>
             </ion-col>
           </ion-row>
         </ion-item>
