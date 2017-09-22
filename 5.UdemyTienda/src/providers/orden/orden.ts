@@ -7,6 +7,7 @@ import _ from 'lodash';
 import { Config as cg } from "../config/config";
 //Models
 import { Orden } from './models/orden';
+import { DbProvider } from "../db/db";
 
 @Injectable()
 export class OrdenProvider {
@@ -16,20 +17,28 @@ export class OrdenProvider {
 
   constructor(
     private appRef: ApplicationRef, // lo uso para actualizar la UI cuando se hace un cambio fiera de la ngZone
+    public dbServ: DbProvider,
     private evts: Events,
     private util : cg
   ) {
-    if(!this._db){
+    this.evts.subscribe('db:init', () => {
       this.initDB();
-    }
+    });
+
+    /** *************** Manejo de el estado de la ui    ********************** */
+    this.evts.subscribe('orden:changed', (doc: Orden) => {
+      this._onUpdatedOrInserted(doc);
+    });
+    this.evts.subscribe('orden:deleted', (doc: Orden) => {
+      this._onDeleted(doc._id);
+    });
   }
 
   public initDB(){
     let loading = this.util.showLoading();
-    this._db = new PouchDB('ordenes');
+    this._db = this.dbServ.db;
     this.fetchAndRenderAllDocs()
       .then( res => {
-        this._reactToChanges()
         loading.dismiss()
       })
       .catch( err => this.util.errorHandler(err.message, err, loading) );
@@ -57,38 +66,11 @@ export class OrdenProvider {
     this._db.destroy().then(() => {
       this._ordenes = [];
       console.log("database removed");
-      this.initDB();
     })
     .catch(console.log.bind(console));
   }
 
   /** *************** Manejo de el estado de la ui    ********************** */
-  private _reactToChanges(): void {
-    this._db.changes({
-      live: true,
-      since: 'now',
-      include_docs: true
-    })
-    .on( 'change', change => {
-
-      if (change.deleted) {
-        // change.id holds the deleted id
-        this._onDeleted(change.id);
-      } else { // updated/inserted
-        // change.doc holds the new doc
-        this._onUpdatedOrInserted(change.doc);
-      }
-      /**
-       * Actualiza la interfaz de usuario
-       * https://angular.io/api/core/ApplicationRef
-       * https://goo.gl/PDi6iM
-       */
-      this.appRef.tick();
-      //lanzo un evento para informar quehubo un cambio en las ordenes
-      this.evts.publish('orden:change');
-    })
-    .on( 'error', console.log.bind(console));
-  }
 
   private _onDeleted(id: string): void {
     let index: number = cg.binarySearch(
@@ -99,8 +81,13 @@ export class OrdenProvider {
     let doc = this._ordenes[index];
     if (doc && doc._id == id) {
       this._ordenes.splice(index, 1);
-
     }
+    /**
+     * Actualiza la interfaz de usuario
+     * https://angular.io/api/core/ApplicationRef
+     * https://goo.gl/PDi6iM
+     */
+    this.appRef.tick();
   }
 
   private _onUpdatedOrInserted(newDoc: Orden): void {
@@ -115,6 +102,7 @@ export class OrdenProvider {
     } else { // insert
       this._ordenes.splice(index, 0, newDoc);
     }
+    this.appRef.tick();
   }
   /** *********** Fin Manejo de el estado de la ui    ********************** */
 

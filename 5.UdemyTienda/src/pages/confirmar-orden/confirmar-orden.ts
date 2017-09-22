@@ -86,7 +86,8 @@ export class ConfirmarOrdenPage {
         nitCliente: form.cliente,
         observaciones: observaciones,
         items: carItems,
-        total: this.cartServ.totalPrice
+        total: this.cartServ.totalPrice,
+        type: "orden"
       }
     }
     if (this.newClientFlag && this.newClient.valid) {
@@ -96,7 +97,8 @@ export class ConfirmarOrdenPage {
         newClient : form,
         observaciones: observaciones,
         items: carItems,
-        total: this.cartServ.totalPrice
+        total: this.cartServ.totalPrice,
+        type: "orden"
       }
     }
     this.ordenServ.pushItem(orden)

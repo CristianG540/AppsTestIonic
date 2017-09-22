@@ -73,8 +73,9 @@ export class HomePage {
           text: 'Save',
           handler: data => {
             this.todoService.createTodo({
-              _id: Date.now().toString(),
-              title: data.title
+              _id  : Date.now().toString(),
+              title: data.title,
+              type : "todo"
             });
           }
         }
@@ -101,9 +102,10 @@ export class HomePage {
           text: 'Save',
           handler: data => {
             this.todoService.updateTodo({
-              _id: todo._id,
-              _rev: todo._rev,
-              title: data.title
+              _id  : todo._id,
+              _rev : todo._rev,
+              title: data.title,
+              type : "todo"
             });
           }
         }

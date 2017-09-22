@@ -36,9 +36,6 @@ export class ClientesProvider {
       };
       this._db
         .sync(this._remoteDB, replicationOptions)
-        /*.on('change', function (change) {
-        console.log("yo, something changed!", change);
-      })*/
         .on("paused", function(info) {
           console.log(
             "Client-replication was paused,usually because of a lost connection",

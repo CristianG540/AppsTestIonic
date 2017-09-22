@@ -17,6 +17,7 @@ export class Config {
   ){
   }
 
+  static readonly SUPERLOGIN_URL: string = 'http://192.168.11.29:3000';
   /* **************************** Cosas de CouchDB  *************************** */
   // Url base de la BD en couch
   static readonly CDB_URL: string = 'http://192.168.11.29:5984/productos';

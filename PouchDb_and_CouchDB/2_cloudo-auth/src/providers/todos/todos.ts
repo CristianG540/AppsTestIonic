@@ -78,7 +78,7 @@ export class TodosProvider {
   }
 
   public handleChange(change): void {
-
+    console.warn("cambio", change )
     if (change.deleted) {
       // change.id holds the deleted id
       this._onDeleted(change.id);

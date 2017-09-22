@@ -8,6 +8,7 @@ export class Orden {
     public total: number,
     public nitCliente?: string,
     public newClient?: any, // Aqui meto el cliente nuevo en caso de que el perro exista
-    public _rev?: string
+    public type: string = "orden",
+    public _rev?: string,
   ) {}
 }

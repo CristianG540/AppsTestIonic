@@ -13,6 +13,8 @@ import { Config } from '../providers/config/config';
 import { ClientesProvider } from '../providers/clientes/clientes';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { OrdenProvider } from '../providers/orden/orden';
+import { AuthProvider } from '../providers/auth/auth';
+import { DbProvider } from '../providers/db/db';
 
 
 @NgModule({
@@ -38,7 +40,9 @@ import { OrdenProvider } from '../providers/orden/orden';
     UsuarioProvider,
     Config,
     ClientesProvider,
-    OrdenProvider
+    OrdenProvider,
+    AuthProvider,
+    DbProvider
   ]
 })
 export class AppModule {}

@@ -1,12 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Loading, LoadingController } from 'ionic-angular';
+import { Http, RequestOptions, Headers } from '@angular/http';
+import { AuthProvider } from '../../providers/auth/auth';
+import { DbProvider } from "../../providers/db/db";
+import { Config as cg } from "../../providers/config/config";
 
-/**
- * Generated class for the LoginPage page.
- *
- * See http://ionicframework.com/docs/components/#navigation for more info
- * on Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -15,11 +13,41 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class LoginPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  private username: string;
+  private password: string;
+
+  private loading: Loading;
+  private backgroundImage = 'assets/img/background/background-4.jpg';
+
+  constructor(
+    private navCtrl: NavController,
+    private loadingCtrl: LoadingController,
+    private navParams: NavParams,
+    private http: Http,
+    private authService: AuthProvider,
+    private dbServ: DbProvider,
+    private util: cg
+  ) {
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad LoginPage');
+  private login(): void {
+    let loading = this.util.showLoading();
+    let credentials = {
+      username: this.username,
+      password: this.password
+    };
+
+    this.authService.login(credentials)
+    .then(res=>{
+      console.log(res);
+      loading.dismiss();
+      this.dbServ.init(res.userDBs.supertest);
+      this.navCtrl.setRoot('TabsPage');
+    }).catch( err => this.util.errorHandler(err.message, err, loading) )
+  }
+
+  private launchSignup(): void {
+    this.navCtrl.push('SignupPage');
   }
 
 }
