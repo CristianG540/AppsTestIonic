@@ -30,7 +30,7 @@ export class OrdenesDetallePage {
   }
 
   ionViewDidLoad() {
-    this.util.showLoading();
+    let loading = this.util.showLoading();
     console.log('ionViewDidLoad OrdenesDetallePage', this.navParams.data);
     this._itemsOrder = this.navParams.data.items;
     this._total = this.navParams.data.total;
@@ -51,12 +51,10 @@ export class OrdenesDetallePage {
             total  : this._itemsOrder[itemId].totalPrice
           }
         });
-        this.util.loading.dismiss();
-
-
+        loading.dismiss();
       })
       .catch(err=>{
-        this.util.errorHandler(err.message, err);
+        this.util.errorHandler(err.message, err, loading);
       })
   }
 

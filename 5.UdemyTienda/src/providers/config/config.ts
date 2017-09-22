@@ -48,8 +48,8 @@ export class Config {
     return low;
   }
 
-  public errorHandler(err: string, errObj?: any): void {
-    if(this.loading){ this.loading.dismiss(); }
+  public errorHandler(err: string, errObj?: any, loading?: Loading): void {
+    if(loading){ loading.dismiss() }
     this.alertCtrl.create({
       title: "Ocurrio un error.",
       message: err,
@@ -58,11 +58,12 @@ export class Config {
     if(err){ console.error(err) }
   }
 
-  public showLoading(): void {
-    this.loading = this.loadingCtrl.create({
+  public showLoading(): Loading {
+    let loading: Loading = this.loadingCtrl.create({
       content: 'Espere por favor...'
     });
-    this.loading.present();
+    loading.present();
+    return loading;
   }
 
   public showToast(msg:string): void {

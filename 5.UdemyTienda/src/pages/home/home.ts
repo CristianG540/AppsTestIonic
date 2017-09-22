@@ -33,7 +33,9 @@ export class HomePage {
   ) {
   }
 
-  ionViewDidLoad(){
+  ionViewDidEnter(){
+    // ESTA MIERDA AQUI ABAJO LA DE RESETEAR LOS PRODS SE DEBE PODER HACER MEJOR CON POUCH
+    this.prodsService.resetProds();
     this.prodsService.recuperarPagSgte()
       .catch( err => this.errorHandler(err.message, err) );
   }

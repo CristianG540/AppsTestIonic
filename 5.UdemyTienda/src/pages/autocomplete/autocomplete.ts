@@ -31,17 +31,17 @@ export class AutocompletePage {
   }
 
   updateSearch(ev: any) {
-    this.util.showLoading();
+    let loading = this.util.showLoading();
     // set val to the value of the searchbar
     let val = ev.target.value;
     if (val == "") {
-      this.util.loading.dismiss();
+      loading.dismiss();
       this.autocompleteItems = [];
       return;
     }
     this.clienteServ.searchCliente(val)
       .then( res => {
-        this.util.loading.dismiss();
+        loading.dismiss();
         console.log("Resultados busqueda clientes",res)
         this.autocompleteItems = _.map(res.rows, (row: any) => {
           return {
@@ -50,6 +50,6 @@ export class AutocompletePage {
           }
         });
       })
-      .catch(err => this.util.errorHandler(err.message, err))
+      .catch(err => this.util.errorHandler(err.message, err, loading))
   }
 }

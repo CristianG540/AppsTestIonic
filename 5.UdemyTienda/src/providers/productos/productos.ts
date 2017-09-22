@@ -8,6 +8,7 @@ import 'rxjs/add/operator/toPromise';
 import { Producto } from './models/producto';
 import { Categoria } from './models/categoria';
 import { Config } from '../config/config'
+import { CarItem } from "../carrito/models/carItem";
 
 @Injectable()
 export class ProductosProvider {
@@ -37,6 +38,14 @@ export class ProductosProvider {
   ) {
   }
 
+  /**
+   * Basandome en este articulo "http://acdcjunior.github.io/querying-couchdb-pouchdb-map-reduce-group-by-example.html"
+   * creo una vista map/reduce en couchdb que me agrupa los productos por categoria y me cuenta las
+   * cantidades de productos por cada categoria
+   *
+   * @returns {Promise<any>}
+   * @memberof ProductosProvider
+   */
   public fetchCategorias(): Promise<any> {
     let options:RequestOptions = Config.CDB_OPTIONS();
     let params = new URLSearchParams();
@@ -226,6 +235,36 @@ export class ProductosProvider {
     })
   }
 
+  public updateQuantity(carItems: CarItem[] ) : Promise<any> {
+
+    let options:RequestOptions = Config.CDB_OPTIONS();
+    let url: string = Config.CDB_URL+'/_bulk_docs';
+
+    let prodsId = _.map(carItems, "_id");
+    return this.fetchProdsByids(prodsId)
+      .then((prods: Producto[])=>{
+
+        let prodsToUpdate = _.map(prods, (prod: Producto)=>{
+          let itemId = Config.binarySearch(carItems, '_id', prod._id);
+          prod.existencias -= carItems[itemId].cantidad;
+          return prod;
+        })
+
+        return this.http.post(
+          url,
+          JSON.stringify({
+            docs : prodsToUpdate
+          }),
+          options
+        )
+        .map( (res: Response) => {
+          return res.json();
+        })
+        .toPromise()
+
+      })
+  }
+
   /**
    * Lo siguiente lo hago para resetear las variables que almacenan los datos
    * al mostrar los productos por categoria, si no las reseteo los productos solo
@@ -234,6 +273,18 @@ export class ProductosProvider {
   public resetProdsByCat(): void {
     this._prodsByCat = [];
     this.startkeyByCat = null;
+  }
+
+   /**
+   * ESTA MIERDA LA TENGO QUITAR SEGURO SE PUEDE HACER MEJOR !!!!!!!
+   * Lo siguiente lo hago para resetear las variables que almacenan los datos
+   * al mostrar los productos por categoria, si no las reseteo los productos solo
+   * se apiñarian uno tras otro y continuarian desde el ultimo producto paginado
+   */
+  public resetProds(): void {
+    this._prods= [];
+    this.startkey = '""';
+    this.skip = '0';
   }
 
   public get prods() : Producto[] {

@@ -11,6 +11,7 @@ import { FormGroup, FormArray, FormBuilder, Validators  } from "@angular/forms";
 import { CarritoProvider } from "../../providers/carrito/carrito";
 import { ClientesProvider } from "../../providers/clientes/clientes";
 import { OrdenProvider } from "../../providers/orden/orden";
+import { ProductosProvider } from "../../providers/productos/productos";
 import { Config as cg } from "../../providers/config/config";
 
 //Models
@@ -36,6 +37,7 @@ export class ConfirmarOrdenPage {
     private cartServ: CarritoProvider,
     private clienteServ: ClientesProvider,
     private ordenServ: OrdenProvider,
+    private prodServ: ProductosProvider,
     private util: cg
   ) {
   }
@@ -69,7 +71,7 @@ export class ConfirmarOrdenPage {
   }
 
   private onSubmit(): void {
-    this.util.showLoading();
+    let loading = this.util.showLoading();
     /**
      * recupero los items del carrito para guardarlos en la orden
      */
@@ -106,10 +108,16 @@ export class ConfirmarOrdenPage {
         this.navCtrl.parent.select(3);
         /** *** *** *** *** *** *** *** *** *** *** *** *** ***   */
 
-        this.util.loading.dismiss();
+        return this.prodServ.updateQuantity(carItems)
+
+      })
+      .then(res=>{
+        // MIRAR POR QUE ESTA MIERDA NO DEVUELVE NADA !!!
+        console.warn("Respuesta cantidad actualizada", res);
+        loading.dismiss();
       })
       .catch(err=>{
-        this.util.errorHandler(err.message, err);
+        this.util.errorHandler(err.message, err, loading);
       })
   }
 

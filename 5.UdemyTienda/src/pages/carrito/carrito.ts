@@ -48,15 +48,15 @@ export class CarritoPage {
   }
 
   private deleteItem(prod: Producto): void {
-    this.util.showLoading();
+    let loading = this.util.showLoading();
     this.cartServ.deleteItem(prod)
       .then(res=>{
-        this.util.loading.dismiss();
+        loading.dismiss();
         this.showToast(`El producto ${res.id} se elimino de carrito correctamente`);
         console.log("prod eliminado carrito", res);
       })
       .catch(err=>{
-        this.util.errorHandler(err.message, err);
+        this.util.errorHandler(err.message, err, loading);
       })
   }
 
@@ -67,9 +67,7 @@ export class CarritoPage {
         this._prods = prods;
         console.log("prods carrito", this._prods);
       })
-      .catch(err=>{
-        this.util.errorHandler(err.message, err);
-      })
+      .catch(console.log.bind(console))
   }
 
   private showToast(msg:string): void {

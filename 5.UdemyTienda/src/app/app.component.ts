@@ -30,15 +30,15 @@ export class MyApp {
   }
 
   private indexDb(): void {
-    this.util.showLoading();
+    let loading = this.util.showLoading();
     this.clienteServ
       .indexDbClientes()
       .then(res => {
-        this.util.loading.dismiss();
+        loading.dismiss();
         this.util.showToast("Indice construido");
       })
       .catch(err => {
-        this.util.errorHandler(err.message, err);
+        this.util.errorHandler(err.message, err, loading);
       });
   }
 }

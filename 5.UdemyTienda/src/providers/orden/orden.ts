@@ -25,14 +25,14 @@ export class OrdenProvider {
   }
 
   public initDB(){
-    this.util.showLoading();
+    let loading = this.util.showLoading();
     this._db = new PouchDB('ordenes');
     this.fetchAndRenderAllDocs()
       .then( res => {
         this._reactToChanges()
-        this.util.loading.dismiss()
+        loading.dismiss()
       })
-      .catch(console.log.bind(console));
+      .catch( err => this.util.errorHandler(err.message, err, loading) );
   }
 
   public fetchAndRenderAllDocs(): Promise<any> {

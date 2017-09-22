@@ -61,13 +61,15 @@ export class NumberPickerComponent {
    * @memberof NumberPickerComponent
    */
   public get btnState() : any {
+    let minus: boolean = false;
+    let plus: boolean = false;
     if ( (this.num <= this.min) || (!this.num) ) {
-      return [true, false]
-    } else if (this.num >= this.max) {
-      return [false, true]
-    } else {
-      return [false, false]
+      minus = true;
     }
+    if (this.num >= this.max) {
+      plus = true;
+    }
+    return [minus, plus];
   }
 
   @Input()

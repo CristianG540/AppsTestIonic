@@ -27,22 +27,22 @@ export class SearchProdPage {
   }
 
   updateSearch(ev: any) {
-    this.util.showLoading();
+    let loading = this.util.showLoading();
     // set val to the value of the searchbar
     let val = ev.target.value;
     if (val == "") {
-      this.util.loading.dismiss();
+      loading.dismiss();
       this.autocompleteItems = [];
       return;
     }
     this.prodsService.searchAutocomplete(val)
       .subscribe(
         (prods: Producto[]) => {
-          this.util.loading.dismiss();
+          loading.dismiss();
           console.log("Resultados busqueda prods",prods)
           this.autocompleteItems = prods;
         },
-        err => this.util.errorHandler(err.message, err)
+        err => this.util.errorHandler(err.message, err, loading)
       );
   }
 

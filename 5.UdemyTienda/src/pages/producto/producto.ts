@@ -29,20 +29,20 @@ export class ProductoPage {
   }
 
   private addProd(): void {
-    this.util.showLoading();
+    let loading = this.util.showLoading();
     this.cartService.pushItem({
       _id: this.producto._id,
       cantidad: 1,
       totalPrice: this.producto.existencias*10
     }).then(res=>{
-      this.util.loading.dismiss();
+      loading.dismiss();
       this.showToast(`El producto ${res.id} se agrego correctamente`);
     }).catch(err=>{
       if(err=="duplicate"){
-        this.util.loading.dismiss();
+        loading.dismiss();
         this.showToast(`El producto ya esta en el carrito`);
       }else{
-        this.util.errorHandler(err.message, err);
+        this.util.errorHandler(err.message, err, loading);
       }
     })
 
