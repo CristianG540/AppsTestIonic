@@ -8,6 +8,7 @@ export class Producto {
     public marcas: string,
     public unidad: string,
     public existencias: number,
+    public precio: number,
     public _rev ?: string
   ) { }
 }

@@ -91,6 +91,8 @@ export class ProductosProvider {
           this.startkey = `"${res.rows[res.rows.length - 1].key}"`;
           this.skip = '1';
           let prods: Producto[] = _.map(res.rows, (v: any, k: number) => {
+            // El precio llega en un formato como "$20.200" entonces lo saneo para que quede "20200"
+            let precio =  parseInt( (<string>v.doc.precio).replace('.','').substring(1) );
             return new Producto(
               v.doc._id,
               v.doc.titulo,
@@ -100,6 +102,7 @@ export class ProductosProvider {
               v.doc.marcas,
               v.doc.unidad,
               parseInt(v.doc.existencias),
+              precio,
               v.doc._rev
             );
           });
@@ -141,7 +144,8 @@ export class ProductosProvider {
     .then(res => {
       if (res && res.docs.length > 0) {
         this.startkeyByCat = res.docs[res.docs.length - 1]._id;
-        let prods: Producto[] = _.map(res.docs, (v: Producto, k: number) => {
+        let prods: Producto[] = _.map(res.docs, (v: any, k: number) => {
+          let precio =  parseInt( (<string>v.precio).replace('.','').substring(1) );
           return new Producto(
             v._id,
             v.titulo,
@@ -151,6 +155,7 @@ export class ProductosProvider {
             v.marcas,
             v.unidad,
             v.existencias,
+            precio,
             v._rev
           );
         });
@@ -177,6 +182,7 @@ export class ProductosProvider {
       console.log("all_docs ids",d)
       if (d && d.rows.length > 0) {
         return _.map(d.rows, (v: any) => {
+          let precio =  parseInt( (<string>v.doc.precio).replace('.','').substring(1) );
           return new Producto(
             v.doc._id,
             v.doc.titulo,
@@ -186,6 +192,7 @@ export class ProductosProvider {
             v.doc.marcas,
             v.doc.unidad,
             parseInt(v.doc.existencias),
+            precio,
             v.doc._rev
           );
         }) ;
@@ -216,6 +223,8 @@ export class ProductosProvider {
       let d = res.json();
       if (d && d.rows.length > 0) {
         return _.map(d.rows, (v: any) => {
+
+          let precio =  parseInt( (<string>v.precio).replace('.','').substring(1) );
           return new Producto(
             v.doc._id,
             v.doc.titulo,
@@ -225,6 +234,7 @@ export class ProductosProvider {
             v.doc.marcas,
             v.doc.unidad,
             parseInt(v.doc.existencias),
+            precio,
             v.doc._rev
           );
         }) ;

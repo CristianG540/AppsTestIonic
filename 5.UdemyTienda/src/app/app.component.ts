@@ -8,11 +8,13 @@ import {
 import { StatusBar } from "@ionic-native/status-bar";
 import { SplashScreen } from "@ionic-native/splash-screen";
 
+//Providers
 import { Config } from "../providers/config/config";
 import { ClientesProvider } from "../providers/clientes/clientes";
 import { AuthProvider } from "../providers/auth/auth";
 import { DbProvider } from '../providers/db/db';
 import { OrdenProvider } from "../providers/orden/orden";
+import { CarritoProvider } from "../providers/carrito/carrito";
 
 @Component({
   templateUrl: "app.html"
@@ -32,6 +34,7 @@ export class MyApp {
     private authService: AuthProvider,
     private dbServ: DbProvider,
     private ordenServ: OrdenProvider,
+    private cartServ: CarritoProvider,
     private util: Config
   ) {
 
@@ -63,7 +66,7 @@ export class MyApp {
       });
   }
 
-  private logout(): void{
+  private logout(): void {
     let loading = this.util.showLoading();
 
     this.authService.isOnline()
@@ -72,6 +75,7 @@ export class MyApp {
       })
       .then( () => {
         this.ordenServ.destroyDB();
+        this.cartServ.destroyDB();
         this.cargarPagina('LoginPage');
         loading.dismiss();
       })

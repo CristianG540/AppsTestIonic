@@ -1,5 +1,10 @@
 <ion-header>
   <ion-navbar>
+    <ion-buttons left>
+      <button ion-button icon-only menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+    </ion-buttons>
     <ion-title>Carrito</ion-title>
   </ion-navbar>
 </ion-header>
@@ -29,7 +34,7 @@
             <ion-col>
               <p> <b>{{ prod._id }}</b> </p>
               <p>{{ prod.aplicacion }}</p>
-              <p>{{ 2000 | currency:'USD':true }}</p>
+              <p>{{ prod.precio | currency:'USD':true }}</p>
             </ion-col>
             <ion-col text-right>
               <number-picker [num]="cartServ.getProdCant(prod)" [max]="prod.existencias" (numChange)="cartServ.setProdCant($event, prod)"></number-picker>

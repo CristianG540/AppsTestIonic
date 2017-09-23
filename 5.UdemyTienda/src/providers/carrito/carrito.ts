@@ -194,14 +194,14 @@ export class CarritoProvider {
   }
 
   public setProdCant(cantPedido : number, prod: Producto): void {
-    // Mirar aqui mostro
+
     let carItemIndex = cg.binarySearch(
       this.carItems,
       '_id',
       prod._id
     );
     this._carItems[carItemIndex].cantidad = cantPedido;
-    this._carItems[carItemIndex].totalPrice = (prod.existencias*10)*cantPedido;
+    this._carItems[carItemIndex].totalPrice = prod.precio * cantPedido;
     this._db.put(this._carItems[carItemIndex])
       .then(res => {
         console.log("couch put res carrito prov", res)
@@ -213,7 +213,7 @@ export class CarritoProvider {
     this._db.destroy().then(() => {
       this._carItems = [];
       console.log("database removed");
-      this.initDB();
+      //this.initDB();
     })
     .catch(console.log.bind(console));
   }

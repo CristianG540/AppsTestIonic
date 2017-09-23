@@ -33,7 +33,7 @@ export class ProductoPage {
     this.cartService.pushItem({
       _id: this.producto._id,
       cantidad: 1,
-      totalPrice: this.producto.existencias*10
+      totalPrice: this.producto.precio
     }).then(res=>{
       loading.dismiss();
       this.showToast(`El producto ${res.id} se agrego correctamente`);

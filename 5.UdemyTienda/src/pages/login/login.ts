@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, Loading, LoadingController } from 'ionic-angular';
-import { Http, RequestOptions, Headers } from '@angular/http';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { FormGroup, FormBuilder, Validators  } from "@angular/forms";
+
+//Providers
 import { AuthProvider } from '../../providers/auth/auth';
 import { DbProvider } from "../../providers/db/db";
 import { Config as cg } from "../../providers/config/config";
@@ -13,28 +15,40 @@ import { Config as cg } from "../../providers/config/config";
 })
 export class LoginPage {
 
+  private loginForm: FormGroup;
   private username: string;
   private password: string;
 
-  private loading: Loading;
-  private backgroundImage = 'assets/img/background/background-4.jpg';
+  private backgroundImage = 'assets/img/background/background-3.jpg';
 
   constructor(
     private navCtrl: NavController,
-    private loadingCtrl: LoadingController,
+    private fb: FormBuilder,
     private navParams: NavParams,
-    private http: Http,
     private authService: AuthProvider,
     private dbServ: DbProvider,
     private util: cg
   ) {
   }
 
+  //Runs when the page is about to enter and become the active page.
+  ionViewWillLoad() {
+    this.initializeForm();
+  }
+
+  private initializeForm(): void {
+    this.loginForm = this.fb.group({
+      username: ['', Validators.required],
+      password: ['', Validators.required]
+    });
+  }
+
   private login(): void {
     let loading = this.util.showLoading();
+    let formModel = JSON.parse(JSON.stringify(this.loginForm.value));
     let credentials = {
-      username: this.username,
-      password: this.password
+      username: formModel.username,
+      password: formModel.password
     };
 
     this.authService.login(credentials)
