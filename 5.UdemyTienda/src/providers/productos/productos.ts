@@ -92,7 +92,8 @@ export class ProductosProvider {
           this.skip = '1';
           let prods: Producto[] = _.map(res.rows, (v: any, k: number) => {
             // El precio llega en un formato como "$20.200" entonces lo saneo para que quede "20200"
-            let precio =  parseInt( (<string>v.doc.precio).replace('.','').substring(1) );
+            let precio = v.doc.precio.toString().replace('.','');
+            precio = (precio[0]=='$') ? precio.substring(1) : precio;
             return new Producto(
               v.doc._id,
               v.doc.titulo,
@@ -113,6 +114,26 @@ export class ProductosProvider {
       });
   }
 
+  /**
+   * utlizo el api find de couchDB "http://docs.couchdb.org/en/stable/api/database/find.html#api-db-find-index"
+   * Para buscar los productos por categoria, tener muy encuenta que para usar este query antes hay q crear el
+   * indice de mango en couch que seria algo asi como
+   * {
+        "index": {
+          "fields": [
+            "_id",
+            "categoria",
+            "existencias"
+          ]
+        },
+        "ddoc" : "cat_exist",
+        "type": "json"
+      }
+   *
+   * @param {string} categoria
+   * @returns {*}
+   * @memberof ProductosProvider
+   */
   public fetchNextPagByCategoria(categoria : string): any {
     let options:RequestOptions = Config.CDB_OPTIONS();
     return this.http.post(
@@ -182,7 +203,8 @@ export class ProductosProvider {
       console.log("all_docs ids",d)
       if (d && d.rows.length > 0) {
         return _.map(d.rows, (v: any) => {
-          let precio =  parseInt( (<string>v.doc.precio).replace('.','').substring(1) );
+          let precio = v.doc.precio.toString().replace('.','');
+          precio = (precio[0]=='$') ? precio.substring(1) : precio;
           return new Producto(
             v.doc._id,
             v.doc.titulo,
