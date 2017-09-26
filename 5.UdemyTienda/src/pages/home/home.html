@@ -12,46 +12,44 @@
   </ion-navbar>
 </ion-header>
 
-<ion-content padding class="card-background-page">
+<ion-content>
 
   <ion-grid>
-    <ion-row *ngFor="let prod of prodsService.prods; trackBy: trackByProds">
-      <ion-card *ngIf="prod.existencias > 0">
-
-        <img [src]="prod.imagen" [alt]="prod.titulo">
-
-        <ion-card-content text-center>
-          <ion-card-title>
-            {{ prod._id }}
-          </ion-card-title>
-          <p>
-            {{ prod.titulo }}
-          </p>
-        </ion-card-content>
-
-        <ion-row no-padding>
-          <ion-col col-4>
-            <button [navPush]="pushPage" [navParams]="prod" ion-button clear small color="danger" icon-left>
-              <ion-icon name='star'></ion-icon>
-              Info
-            </button>
-          </ion-col>
-          <ion-col col-4>
-            <button ion-button clear small color="danger" icon-left (click)="addProd(prod)" [disabled]="prod.existencias == 0">
-              <ion-icon name='add'></ion-icon>
-              Agregar
-            </button>
-          </ion-col>
-          <ion-col col-4 align-self-center text-center>
+    <ion-row no-padding>
+      <ion-col col-6 no-padding *ngFor="let prod of prodsService.prods; trackBy: trackByProds">
+        <ion-card >
+          <img [src]="prod.imagen" [alt]="prod.titulo">
+          <div class="post-description" text-wrap>
+            <small>{{ prod.titulo }}</small>
+            <br>
             <ion-note>
-              {{ prod.existencias }} {{ prod.unidad | uppercase }}.
+              <small>
+                {{ prod._id }} |
+              </small>
+              <small>
+                {{ prod.existencias }} {{ prod.unidad | uppercase }}
+              </small>
             </ion-note>
-          </ion-col>
-        </ion-row>
-
-      </ion-card>
+          </div>
+          <div>
+            <ion-row no-padding>
+              <ion-col no-padding>
+                <button ion-button block clear color="danger" icon-only [navPush]="pushPage" [navParams]="prod">
+                  <ion-icon name='information-circle'></ion-icon>
+                </button>
+              </ion-col>
+              <ion-col no-padding align-self-center text-center>
+                <button ion-button block clear color="danger" icon-only (click)="addProd(prod)" [disabled]="prod.existencias == 0">
+                  <ion-icon name='add-circle'></ion-icon>
+                </button>
+              </ion-col>
+            </ion-row>
+          </div>
+        </ion-card>
+      </ion-col>
     </ion-row>
   </ion-grid>
+
 
   <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
     <ion-infinite-scroll-content></ion-infinite-scroll-content>

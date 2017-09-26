@@ -67,8 +67,7 @@ export class ClientesProvider {
       fields: ["nombre_cliente"],
       limit: 50,
       include_docs: true,
-      highlighting: true,
-      mm: "50%"
+      highlighting: true
     });
   }
 

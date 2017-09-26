@@ -93,7 +93,7 @@ export class ProductosProvider {
           let prods: Producto[] = _.map(res.rows, (v: any, k: number) => {
             // El precio llega en un formato como "$20.200" entonces lo saneo para que quede "20200"
             let precio = v.doc.precio.toString().replace('.','');
-            precio = (precio[0]=='$') ? precio.substring(1) : precio;
+            precio = parseInt( (precio[0]=='$') ? precio.substring(1) : precio );
             return new Producto(
               v.doc._id,
               v.doc.titulo,
@@ -204,7 +204,7 @@ export class ProductosProvider {
       if (d && d.rows.length > 0) {
         return _.map(d.rows, (v: any) => {
           let precio = v.doc.precio.toString().replace('.','');
-          precio = (precio[0]=='$') ? precio.substring(1) : precio;
+          precio = parseInt( (precio[0]=='$') ? precio.substring(1) : precio );
           return new Producto(
             v.doc._id,
             v.doc.titulo,
@@ -245,8 +245,8 @@ export class ProductosProvider {
       let d = res.json();
       if (d && d.rows.length > 0) {
         return _.map(d.rows, (v: any) => {
-
-          let precio =  parseInt( (<string>v.precio).replace('.','').substring(1) );
+          let precio = v.doc.precio.toString().replace('.','');
+          precio = parseInt( (precio[0]=='$') ? precio.substring(1) : precio );
           return new Producto(
             v.doc._id,
             v.doc.titulo,
