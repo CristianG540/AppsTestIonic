@@ -309,32 +309,20 @@ export class ProductosProvider {
 
   public updateQuantity(carItems: CarItem[] ) : Promise<any> {
 
-    let options:RequestOptions = Config.CDB_OPTIONS();
-    let url: string = Config.CDB_URL+'/_bulk_docs';
-
     let prodsId = _.map(carItems, "_id");
     return this.fetchProdsByids(prodsId)
-      .then((prods: Producto[])=>{
+    .then((prods: Producto[])=>{
+      let prodsToUpdate = _.map(prods, (prod: Producto)=>{
+        let itemId = Config.binarySearch(carItems, '_id', prod._id);
+        prod.existencias -= carItems[itemId].cantidad;
+        return prod;
+      });
+      return prodsToUpdate;
+    })
+    .then( prodsToUpdate => {
+      return this._db.bulkDocs(prodsToUpdate)
+    })
 
-        let prodsToUpdate = _.map(prods, (prod: Producto)=>{
-          let itemId = Config.binarySearch(carItems, '_id', prod._id);
-          prod.existencias -= carItems[itemId].cantidad;
-          return prod;
-        })
-
-        return this.http.post(
-          url,
-          JSON.stringify({
-            docs : prodsToUpdate
-          }),
-          options
-        )
-        .map( (res: Response) => {
-          return res.json();
-        })
-        .toPromise()
-
-      })
   }
 
   /**
