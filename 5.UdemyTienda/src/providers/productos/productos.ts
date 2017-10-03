@@ -34,11 +34,9 @@ export class ProductosProvider {
    */
   private startkey:string = '';
   /**
-   * Este startkey es diferente al anterior, tambien lo uso para paginar los resultados
-   * pero a diferencia del anterior este lo envio por POST en el "_find" de COUCHDB
-   * para usar los querys de mango
+   * http://docs.couchdb.org/en/2.0.0/couchapp/views/pagination.html
    */
-  private startkeyByCat = null;
+  private skipByCat:number = 0;
 
 
   constructor(
@@ -162,129 +160,71 @@ export class ProductosProvider {
       })
   }
 
-  public fetchNextPagByCategoria(categoria : string): any {
-    //debugger;
-    return this._db.createIndex({
-      index: {
-        fields: ['_id', 'categoria', 'existencias'],
-        ddoc: "cat_exist"
-      }
-    }).then( () => {
-      //debugger;
-      return this._db.find({
-        selector: {
-          _id: {
-            $gt: this.startkeyByCat
-          },
-          categoria: {
-            $regex: "^"+categoria
-          },
-          existencias: {
-            $gt: "0.00"
-          },
-        },
-        sort: [
-          { _id: "asc" }
-        ],
-        limit: this.cantProdsPag,
-        use_index: 'cat_exist'
-      });
-    }).then(res => {
-      //debugger;
-      if (res && res.docs.length > 0) {
-        this.startkeyByCat = res.docs[res.docs.length - 1]._id;
-        let prods: Producto[] = _.map(res.docs, (v: any, k: number) => {
-          let precio =  parseInt( (<string>v.precio).replace('.','').substring(1) );
-          return new Producto(
-            v._id,
-            v.titulo,
-            v.aplicacion,
-            v.imagen,
-            v.categoria,
-            v.marcas,
-            v.unidad,
-            v.existencias,
-            precio,
-            v._rev
-          );
-        });
-        this._prodsByCat.push(...prods );
-      }
-      return res;
-    });
-  }
-
   /**
-   * utlizo el api find de couchDB "http://docs.couchdb.org/en/stable/api/database/find.html#api-db-find-index"
-   * Para buscar los productos por categoria, tener muy encuenta que para usar este query antes hay q crear el
-   * indice de mango en couch que seria algo asi como
-   * {
-        "index": {
-          "fields": [
-            "_id",
-            "categoria",
-            "existencias"
-          ]
-        },
-        "ddoc" : "cat_exist",
-        "type": "json"
-      }
-   *
+   * utlizo una vista oara hacer un map/reduce "https://stackoverflow.com/questions/24909317/how-to-write-wildcard-search-query-in-couchdb-where-name-like-a"
+   * Para buscar los productos por categoria, tener muy encuenta que para
+   * usar este query antes hay q crear la vista
    * @param {string} categoria
    * @returns {*}
    * @memberof ProductosProvider
    */
-  /*public fetchNextPagByCategoriaAjax(categoria : string): any {
-    let options:RequestOptions = Config.CDB_OPTIONS();
-    return this.http.post(
-      Config.CDB_URL+'/_find',
-      JSON.stringify({
-        "selector": {
-          "_id": {
-            "$gt": this.startkeyByCat
-          },
-          "categoria": {
-            "$regex": "^"+categoria
-          },
-          "existencias": {
-            "$gt": "0.00"
-          }
-        },
-        "sort": [
-          { "_id": "asc" }
-        ],
-        "limit": this.cantProdsPag,
-        "use_index": "cat_exist"
-      }),
-      options
-    )
-    .map( (res: Response) => {
-      return res.json();
-    })
-    .toPromise()
-    .then(res => {
-      if (res && res.docs.length > 0) {
-        this.startkeyByCat = res.docs[res.docs.length - 1]._id;
-        let prods: Producto[] = _.map(res.docs, (v: any, k: number) => {
-          let precio =  parseInt( (<string>v.precio).replace('.','').substring(1) );
+  public fetchNextPagByCategoria(categoria : string): any {
+
+    categoria = categoria.toLocaleLowerCase();
+    // create a design doc
+    var ddoc = {
+      _id: '_design/categoriaview',
+      views: {
+        producto_categoria: {
+          map : function (doc) {
+            if(doc.categoria && parseInt(doc.existencias)>0){
+              emit(doc.categoria.toLowerCase(), null);
+            }
+          }.toString() // The .toString() at the end of the map function is necessary to prep the object for becoming valid JSON.
+        }
+      }
+    };
+
+    // save the design doc
+    return this._db.put(ddoc).catch(err => {
+      if (err.name !== 'conflict') {
+        throw err;
+      }
+      // ignore if doc already exists
+    }).then( () => {
+      return this._db.query('categoriaview/producto_categoria', {
+        startkey     : categoria,
+        endkey       : categoria+"\uffff",
+        skip         : this.skipByCat,
+        limit        : this.cantProdsPag,
+        include_docs : true
+      });
+    }).then(res => {
+
+      if (res && res.rows.length > 0) {
+        this.skipByCat += this.cantProdsPag;
+        let prods: Producto[] = _.map(res.rows, (v: any, k: number) => {
+          let precio = v.doc.precio.toString().replace('.','');
+          precio = parseInt( (precio[0]=='$') ? precio.substring(1) : precio );
           return new Producto(
-            v._id,
-            v.titulo,
-            v.aplicacion,
-            v.imagen,
-            v.categoria,
-            v.marcas,
-            v.unidad,
-            v.existencias,
+            v.doc._id,
+            v.doc.titulo,
+            v.doc.aplicacion,
+            v.doc.imagen,
+            v.doc.categoria,
+            v.doc.marcas,
+            v.doc.unidad,
+            v.doc.existencias,
             precio,
-            v._rev
+            v.doc._rev
           );
         });
         this._prodsByCat.push(...prods );
       }
       return res;
     });
-  }*/
+
+  }
 
   public fetchProdsByids( ids: any ): Promise<any>{
     let options:RequestOptions = Config.CDB_OPTIONS();
@@ -404,7 +344,7 @@ export class ProductosProvider {
    */
   public resetProdsByCat(): void {
     this._prodsByCat = [];
-    this.startkeyByCat = null;
+    this.skipByCat = 0;
   }
 
    /**

@@ -36,7 +36,7 @@ export class ProductosCategoriaPage {
   private doInfinite(infiniteScroll): void {
     this.prodsService.fetchNextPagByCategoria(this.navParams.get('nombre'))
       .then( (res) => {
-        if (res && res.docs.length > 0) {
+        if (res && res.rows.length > 0) {
           infiniteScroll.complete()
         }else{
           infiniteScroll.enable(false);
