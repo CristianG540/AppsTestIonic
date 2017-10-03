@@ -36,14 +36,12 @@ export class SearchProdPage {
       return;
     }
     this.prodsService.searchAutocomplete(val)
-      .subscribe(
-        (prods: Producto[]) => {
-          loading.dismiss();
-          console.log("Resultados busqueda prods",prods)
-          this.autocompleteItems = prods;
-        },
-        err => this.util.errorHandler(err.message, err, loading)
-      );
+      .then( (prods: Producto[]) => {
+        loading.dismiss();
+        console.log("Resultados busqueda prods",prods)
+        this.autocompleteItems = prods;
+      }).catch( err => this.util.errorHandler(err.message, err, loading) )
+
   }
 
 }

@@ -260,24 +260,30 @@ export class ProductosProvider {
 
   }
 
-  public searchAutocomplete(query: string): Observable<Producto[]> {
+  /**
+   *
+   * este metodo es el encargado de hacer funcionar la busqueda de los productos
+   * mediante el sku
+   *
+   * @param {string} query
+   * @returns {Observable<Producto[]>}
+   * @memberof ProductosProvider
+   */
+  public searchAutocomplete(query: string): Promise<any> {
     /**
      * Para mas informacion sobre este plugin la pagina principal:
      * https://github.com/pouchdb-community/pouchdb-quick-search
      */
     query = query.toUpperCase();
-    let options:RequestOptions = Config.CDB_OPTIONS();
-    let params = new URLSearchParams();
-    options.params = params;
-    params.set('include_docs', 'true');
-    params.set('startkey', `"${query}"`);
-    params.set('endkey', `"${query+"\uffff"}"`);
-    params.set('limit', '30');
-    return this.http.get(Config.CDB_URL+'/_all_docs',options)
-    .map(res=>{
-      let d = res.json();
-      if (d && d.rows.length > 0) {
-        return _.map(d.rows, (v: any) => {
+    return this._db.allDocs({
+      include_docs : true,
+      startkey     : query,
+      endkey       : query+"\uffff",
+      limit        : 30
+    }).then(res => {
+
+      if (res && res.rows.length > 0) {
+        return _.map(res.rows, (v: any) => {
           let precio = v.doc.precio.toString().replace('.','');
           precio = parseInt( (precio[0]=='$') ? precio.substring(1) : precio );
           return new Producto(
@@ -297,7 +303,8 @@ export class ProductosProvider {
         return [];
       }
 
-    })
+    });
+
   }
 
   public updateQuantity(carItems: CarItem[] ) : Promise<any> {
