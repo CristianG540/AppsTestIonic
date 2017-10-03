@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Http, RequestOptions, Response, URLSearchParams } from '@angular/http';
 import _ from 'lodash';
+import PouchDB from 'pouchdb';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
@@ -10,21 +11,26 @@ import { Categoria } from './models/categoria';
 import { Config } from '../config/config'
 import { CarItem } from "../carrito/models/carItem";
 
+// Info del por que hago esto https://github.com/domiSchenk/PouchDB-typescript-definitions/issues/4
+declare var emit:any;
+
 @Injectable()
 export class ProductosProvider {
 
+  private _db: any;
+  private _remoteDB: any;
   private _prods: Producto[] = [];
   private _categorias: Categoria[] = [];
   private _prodsByCat: Producto[] = [];
 
   /* parametros usados por couchdb para la paginacion de los productos */
   /* mas info: https://pouchdb.com/2014/04/14/pagination-strategies-with-pouchdb.html */
-  private cantProdsPag:string = '10';
-  private skip:string = '0';
+  private cantProdsPag:number = 10;
+  private skip:number = 0;
   /**
    * este starkey lo uso para paginar los resultados de "_all_docs"
    */
-  private startkey:string = '""'; // CouchDb solo recibe un string si esta entre comillas
+  private startkey:string = '';
   /**
    * Este startkey es diferente al anterior, tambien lo uso para paginar los resultados
    * pero a diferencia del anterior este lo envio por POST en el "_find" de COUCHDB
@@ -36,6 +42,38 @@ export class ProductosProvider {
   constructor(
     public http: Http
   ) {
+    if (!this._db) {
+      this._db = new PouchDB("productos");
+      this._remoteDB = new PouchDB(Config.CDB_URL, {
+        auth: {
+          username: "admin",
+          password: "admin"
+        }
+      });
+      let replicationOptions = {
+        live: true,
+        retry: true
+      };
+      this._db.replicate.from(this._remoteDB, replicationOptions)
+        .on("paused", function(info) {
+          console.log(
+            "Prods-replication was paused,usually because of a lost connection",
+            info
+          );
+        })
+        .on("active", function(info) {
+          console.log("Prods-replication was resumed", info);
+        })
+        .on("denied", function(err) {
+          console.log(
+            "Prods-a document failed to replicate (e.g. due to permissions)",
+            err
+          );
+        })
+        .on("error", function(err) {
+          console.log("Prods-totally unhandled error (shouldn't happen)", err);
+        });
+    }
   }
 
   /**
@@ -47,19 +85,33 @@ export class ProductosProvider {
    * @memberof ProductosProvider
    */
   public fetchCategorias(): Promise<any> {
-    let options:RequestOptions = Config.CDB_OPTIONS();
-    let params = new URLSearchParams();
-    params.set('group_level', '1');
-    params.set('group', 'true');
-    options.params = params;
-    let url: string = Config.CDB_URL+'/_design/categoriaview/_view/categoriaview';
+    // create a design doc
+    var ddoc = {
+      _id: '_design/categoriaview',
+      views: {
+        categoriaview: {
+          map : function (doc) {
+            var car = doc.categoria.split(",")
+            if(parseInt(doc.existencias)>0){
+              emit(car[0], 1);
+            }
+          }.toString() // The .toString() at the end of the map function is necessary to prep the object for becoming valid JSON.
+        }
+      }
+    }
 
-    return this.http.get(url, options)
-    .map( (res: Response) => {
-      return res.json();
-    })
-    .toPromise()
-    .then(res => {
+    // save the design doc
+    return this._db.put(ddoc).catch(err => {
+      if (err.name !== 'conflict') {
+        throw err;
+      }
+      // ignore if doc already exists
+    }).then( () => {
+      return this._db.query('categoriaview', {
+        group_level : 1,
+        group       : true
+      });
+    }).then(res => {
       if (res && res.rows.length > 0) {
         this._categorias = _.map(res.rows, (v: any, k: number) => {
           return new Categoria(
@@ -69,27 +121,20 @@ export class ProductosProvider {
         });
       }
       return this._categorias;
-    });
+    })
+
   }
 
   public recuperarPagSgte(): Promise<any> {
-    let options:RequestOptions = Config.CDB_OPTIONS();
-    let params = new URLSearchParams();
-    params.set('include_docs', 'true');
-    params.set('limit', this.cantProdsPag);
-    params.set('skip' , this.skip);
-    params.set('startkey', this.startkey);
-    options.params = params;
-
-    return this.http.get(Config.CDB_URL+'/_all_docs', options)
-      .map( (res: Response) => {
-        return res.json();
-      })
-      .toPromise()
-      .then(res => {
+    return this._db.allDocs({
+        include_docs : true,
+        limit        : this.cantProdsPag,
+        skip         : this.skip,
+        startkey     : this.startkey
+      }).then(res => {
         if (res && res.rows.length > 0) {
-          this.startkey = `"${res.rows[res.rows.length - 1].key}"`;
-          this.skip = '1';
+          this.startkey = res.rows[res.rows.length - 1].key;
+          this.skip = 1;
           let prods: Producto[] = _.map(res.rows, (v: any, k: number) => {
             // El precio llega en un formato como "$20.200" entonces lo saneo para que quede "20200"
             let precio = v.doc.precio.toString().replace('.','');
@@ -111,7 +156,7 @@ export class ProductosProvider {
         }
         console.log("prodsProvider-recuperarPagSgte",this._prods);
         return res;
-      });
+      })
   }
 
   /**
@@ -153,7 +198,7 @@ export class ProductosProvider {
         "sort": [
           { "_id": "asc" }
         ],
-        "limit": parseInt(this.cantProdsPag),
+        "limit": this.cantProdsPag,
         "use_index": "cat_exist"
       }),
       options
@@ -315,8 +360,8 @@ export class ProductosProvider {
    */
   public resetProds(): void {
     this._prods= [];
-    this.startkey = '""';
-    this.skip = '0';
+    this.startkey = '';
+    this.skip = 0;
   }
 
   public get prods() : Producto[] {
