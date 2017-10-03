@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { Http, RequestOptions, Response, URLSearchParams } from '@angular/http';
 import _ from 'lodash';
 import PouchDB from 'pouchdb';
-import PouchDBFind from 'pouchdb-find';
 
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
@@ -42,7 +41,6 @@ export class ProductosProvider {
   constructor(
     public http: Http
   ) {
-    PouchDB.plugin(require('pouchdb-find').default);
     if (!this._db) {
       this._db = new PouchDB("productos");
       this._remoteDB = new PouchDB(Config.CDB_URL, {
@@ -126,6 +124,10 @@ export class ProductosProvider {
 
   }
 
+  /**
+   * Esta funcion es la que rcupera los productos del infinite scroll
+   * de la pagina principal
+   */
   public recuperarPagSgte(): Promise<any> {
     return this._db.allDocs({
         include_docs : true,
@@ -227,22 +229,15 @@ export class ProductosProvider {
   }
 
   public fetchProdsByids( ids: any ): Promise<any>{
-    let options:RequestOptions = Config.CDB_OPTIONS();
-    let params = new URLSearchParams();
-    options.params = params;
-    params.set('include_docs', 'true');
-    return this.http.post(
-      Config.CDB_URL+'/_all_docs',
-      JSON.stringify({
-        "keys" : ids
-      }),
-      options
-    )
-    .map(res=>{
-      let d = res.json();
-      console.log("all_docs ids",d)
-      if (d && d.rows.length > 0) {
-        return _.map(d.rows, (v: any) => {
+
+    return this._db.allDocs({
+      include_docs : true,
+      keys         : ids
+    }).then(res => {
+
+      console.log("all_docs ids", res)
+      if (res && res.rows.length > 0) {
+        return _.map(res.rows, (v: any) => {
           let precio = v.doc.precio.toString().replace('.','');
           precio = parseInt( (precio[0]=='$') ? precio.substring(1) : precio );
           return new Producto(
@@ -261,9 +256,7 @@ export class ProductosProvider {
       }else{
         return [];
       }
-
     })
-    .toPromise()
 
   }
 
