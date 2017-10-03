@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { Http, RequestOptions, Response, URLSearchParams } from '@angular/http';
 import _ from 'lodash';
 import PouchDB from 'pouchdb';
+import PouchDBFind from 'pouchdb-find';
+
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
@@ -42,6 +44,7 @@ export class ProductosProvider {
   constructor(
     public http: Http
   ) {
+    PouchDB.plugin(require('pouchdb-find').default);
     if (!this._db) {
       this._db = new PouchDB("productos");
       this._remoteDB = new PouchDB(Config.CDB_URL, {
@@ -159,6 +162,58 @@ export class ProductosProvider {
       })
   }
 
+  public fetchNextPagByCategoria(categoria : string): any {
+    //debugger;
+    return this._db.createIndex({
+      index: {
+        fields: ['_id', 'categoria', 'existencias'],
+        ddoc: "cat_exist"
+      }
+    }).then( () => {
+      //debugger;
+      return this._db.find({
+        selector: {
+          _id: {
+            $gt: this.startkeyByCat
+          },
+          categoria: {
+            $regex: "^"+categoria
+          },
+          existencias: {
+            $gt: "0.00"
+          },
+        },
+        sort: [
+          { _id: "asc" }
+        ],
+        limit: this.cantProdsPag,
+        use_index: 'cat_exist'
+      });
+    }).then(res => {
+      //debugger;
+      if (res && res.docs.length > 0) {
+        this.startkeyByCat = res.docs[res.docs.length - 1]._id;
+        let prods: Producto[] = _.map(res.docs, (v: any, k: number) => {
+          let precio =  parseInt( (<string>v.precio).replace('.','').substring(1) );
+          return new Producto(
+            v._id,
+            v.titulo,
+            v.aplicacion,
+            v.imagen,
+            v.categoria,
+            v.marcas,
+            v.unidad,
+            v.existencias,
+            precio,
+            v._rev
+          );
+        });
+        this._prodsByCat.push(...prods );
+      }
+      return res;
+    });
+  }
+
   /**
    * utlizo el api find de couchDB "http://docs.couchdb.org/en/stable/api/database/find.html#api-db-find-index"
    * Para buscar los productos por categoria, tener muy encuenta que para usar este query antes hay q crear el
@@ -179,7 +234,7 @@ export class ProductosProvider {
    * @returns {*}
    * @memberof ProductosProvider
    */
-  public fetchNextPagByCategoria(categoria : string): any {
+  /*public fetchNextPagByCategoriaAjax(categoria : string): any {
     let options:RequestOptions = Config.CDB_OPTIONS();
     return this.http.post(
       Config.CDB_URL+'/_find',
@@ -229,7 +284,7 @@ export class ProductosProvider {
       }
       return res;
     });
-  }
+  }*/
 
   public fetchProdsByids( ids: any ): Promise<any>{
     let options:RequestOptions = Config.CDB_OPTIONS();
