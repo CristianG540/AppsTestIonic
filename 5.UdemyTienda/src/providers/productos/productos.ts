@@ -53,23 +53,24 @@ export class ProductosProvider {
         live: true,
         retry: true
       };
-      this._db.replicate.from(this._remoteDB, replicationOptions)
-        .on("paused", function(info) {
+
+      PouchDB.replicate(this._remoteDB, this._db, replicationOptions)
+        .on("paused", info => {
           console.log(
             "Prods-replication was paused,usually because of a lost connection",
             info
           );
         })
-        .on("active", function(info) {
-          console.log("Prods-replication was resumed", info);
+        .on('active', () => {
+          console.log("Prods-replication was resumed");
         })
-        .on("denied", function(err) {
+        .on("denied", err => {
           console.log(
             "Prods-a document failed to replicate (e.g. due to permissions)",
             err
           );
         })
-        .on("error", function(err) {
+        .on("error", err => {
           console.log("Prods-totally unhandled error (shouldn't happen)", err);
         });
     }
