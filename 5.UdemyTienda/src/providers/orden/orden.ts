@@ -1,4 +1,6 @@
 import { Injectable, ApplicationRef } from "@angular/core";
+import { Http, RequestOptions, Response, URLSearchParams } from '@angular/http';
+import { Storage } from '@ionic/storage';
 import { Events } from 'ionic-angular';
 import PouchDB from 'pouchdb';
 import _ from 'lodash';
@@ -19,7 +21,9 @@ export class OrdenProvider {
     private appRef: ApplicationRef, // lo uso para actualizar la UI cuando se hace un cambio fiera de la ngZone
     public dbServ: DbProvider,
     private evts: Events,
-    private util : cg
+    private util : cg,
+    private http: Http,
+    private storage: Storage
   ) {
     this.evts.subscribe('db:init', () => {
       this.initDB();
@@ -30,6 +34,11 @@ export class OrdenProvider {
       this._onUpdatedOrInserted(doc);
     });
     this.evts.subscribe('orden:deleted', (doc: Orden) => {
+      /**
+       * Para que esto funcione, se deben eliminar los datos en couchdb
+       * agregando "_deleted" : true al documento, osea eliminando el doc
+       * usando el api de modificar de couch, no la de eliminar
+       */
       this._onDeleted(doc._id);
     });
   }
@@ -68,6 +77,30 @@ export class OrdenProvider {
       console.log("database removed");
     })
     .catch(console.log.bind(console));
+  }
+
+
+  public sendOrdersSap(): any {
+
+    this.storage.get('josefa-token').then((token: string) => {
+
+      let options:RequestOptions = cg.JOSEFA_OPTIONS('Bearer ' + token);
+      let url: string = cg.JOSEFA_URL+'/sap';
+
+      return this.http.get(url, options)
+      .map( (res: Response) => {
+        return res.json();
+      }).subscribe(
+        res => {
+          console.log("Info JOSEFA", res);
+        },
+        err => {
+          console.error("err JOSEFA", err);
+        }
+      );
+
+    });
+
   }
 
   /** *************** Manejo de el estado de la ui    ********************** */
@@ -119,5 +152,17 @@ export class OrdenProvider {
   public get ordenes() : Orden[] {
     return JSON.parse(JSON.stringify( _.orderBy(this._ordenes, '_id', 'desc') ));
   }
+
+  /**
+   * Getter que me trae las ordenes pendientes
+   *
+   * @readonly
+   * @type {Orden[]}
+   * @memberof OrdenProvider
+   */
+  public get ordenesPendientes() : Orden[] {
+    return JSON.parse( JSON.stringify( _.filter(this._ordenes, ['estado', false]) ) );
+  }
+
 
 }

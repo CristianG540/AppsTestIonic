@@ -18,6 +18,26 @@ export class Config {
   }
 
   static readonly SUPERLOGIN_URL: string = 'http://192.168.11.29:3000';
+
+  /* **************************** Cosas de JOSEFA  *************************** */
+  static readonly JOSEFA_URL: string = 'http://josefa2.igb';
+  static JOSEFA_OPTIONS(auth: string): RequestOptions{
+    let headers = new Headers({
+      'Accept'       : 'application/json',
+      'Content-Type' : 'application/json',
+      'Authorization': auth
+    });
+    let options = new RequestOptions({
+      headers: headers
+    });
+    return options;
+  }
+
+  /* ************************* Fin Cosas de JOSEFA *****************************/
+
+
+
+
   /* **************************** Cosas de CouchDB  *************************** */
   // Url base de la BD en couch
   static readonly CDB_URL: string = 'http://192.168.11.29:5984/productos';
@@ -37,6 +57,7 @@ export class Config {
     return options;
   }
   /* ************************* Fin Cosas de CouchDB *****************************/
+  // Esta es una version mas rapida del "_.find" de lodash :3
   // Gracias a https://pouchdb.com/2015/02/28/efficiently-managing-ui-state-in-pouchdb.html
   static binarySearch(arr: any, property: string, search: any): number {
     let low: number = 0;

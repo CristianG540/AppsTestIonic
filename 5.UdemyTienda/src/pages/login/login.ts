@@ -54,10 +54,24 @@ export class LoginPage {
     this.authService.login(credentials)
     .then(res=>{
       console.log(res);
-      loading.dismiss();
       this.dbServ.init(res.userDBs.supertest);
       this.navCtrl.setRoot('TabsPage');
-    }).catch( err => this.util.errorHandler(err.message, err, loading) )
+      return this.authService.getTokenJosefa();
+    })
+    .then( () => {
+      loading.dismiss();
+    } )
+    .catch( err => this.util.errorHandler(err.message, err, loading) )
+  }
+
+
+  private loginJosefa(): void {
+    let loading = this.util.showLoading();
+    this.authService.getTokenJosefa()
+
+    .catch(err=>{
+      this.util.errorHandler(err.message, err, loading);
+    })
   }
 
   private launchSignup(): void {

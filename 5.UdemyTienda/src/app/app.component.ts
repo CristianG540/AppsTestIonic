@@ -74,6 +74,9 @@ export class MyApp {
         return this.authService.logout()
       })
       .then( () => {
+        return this.authService.removeTokenJosefa()
+      })
+      .then( () => {
         this.ordenServ.destroyDB();
         this.cartServ.destroyDB();
         this.cargarPagina('LoginPage');

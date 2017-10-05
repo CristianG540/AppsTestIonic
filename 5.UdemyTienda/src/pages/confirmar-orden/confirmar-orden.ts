@@ -79,6 +79,11 @@ export class ConfirmarOrdenPage {
     let orden: Orden;
     let observaciones = this.ordenForm.get('observaciones').value;
 
+    /**
+     * Si el cliente no es nuevo ya sea porque se sabia el nit y lo
+     * ingreso manualmente o desde el buscador de clientes entonces recupero
+     * la info desde el form de estandar y se la asigno a la orden
+     */
     if (!this.newClientFlag && this.ordenForm.valid) {
       let form = JSON.parse(JSON.stringify(this.ordenForm.value));
       orden = {
@@ -87,9 +92,15 @@ export class ConfirmarOrdenPage {
         observaciones: observaciones,
         items: carItems,
         total: this.cartServ.totalPrice,
+        estado: false,
         type: "orden"
       }
     }
+    /**
+     * Si le dio click a la opcion de nuevo cliente entonces oculto el buscador de clientes
+     * y se despliega le formulario para clientes nuevos, que pide el nombre y el nit
+     * recupero los datos y se los asigno a la orden
+     */
     if (this.newClientFlag && this.newClient.valid) {
       let form = JSON.parse(JSON.stringify(this.newClient.value));
       orden = {
@@ -98,9 +109,14 @@ export class ConfirmarOrdenPage {
         observaciones: observaciones,
         items: carItems,
         total: this.cartServ.totalPrice,
+        estado: false,
         type: "orden"
       }
     }
+
+    /**
+     * Guardo la orden en la base de datos
+     */
     this.ordenServ.pushItem(orden)
       .then(res=>{
 
@@ -110,19 +126,34 @@ export class ConfirmarOrdenPage {
         this.navCtrl.parent.select(3);
         /** *** *** *** *** *** *** *** *** *** *** *** *** ***   */
 
+        // Actualizo la cantidad de los productos que se ordenaron
         return this.prodServ.updateQuantity(carItems)
 
       })
       .then(res=>{
-        // MIRAR POR QUE ESTA MIERDA NO DEVUELVE NADA !!!
         console.warn("Respuesta cantidad actualizada", res);
         loading.dismiss();
+
+        this.ordenServ.sendOrdersSap()
+
       })
       .catch(err=>{
         this.util.errorHandler(err.message, err, loading);
       })
   }
 
+  /**
+   * este getter lo uso en la vista de este pagina, se encarga de informar
+   * el estado de los datos de la orden por asi decirlo, debido a que
+   * se usan dos forms diferentes uno si el cliente es nuevo y otro si el
+   * cliente es viejo, entonces esto me devuelve el estado del formulario activo
+   * y asi puedo deshabilitar el boton de finalizar la orden si el fomrulario activo
+   * es invalido
+   *
+   * @readonly
+   * @type {boolean}
+   * @memberof ConfirmarOrdenPage
+   */
   public get formStatus() : boolean {
     if (this.newClientFlag) {
       return this.newClient.valid;

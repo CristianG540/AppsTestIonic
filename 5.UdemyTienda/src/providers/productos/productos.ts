@@ -55,6 +55,12 @@ export class ProductosProvider {
       };
 
       PouchDB.replicate(this._remoteDB, this._db, replicationOptions)
+        .on("change", change => {
+          console.log(
+            "Prods-replication was changed",
+            change
+          );
+        })
         .on("paused", info => {
           console.log(
             "Prods-replication was paused,usually because of a lost connection",
@@ -267,7 +273,6 @@ export class ProductosProvider {
    * mediante el sku
    *
    * @param {string} query
-   * @returns {Observable<Producto[]>}
    * @memberof ProductosProvider
    */
   public searchAutocomplete(query: string): Promise<any> {

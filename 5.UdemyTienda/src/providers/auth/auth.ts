@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import superlogin from 'superlogin-client';
-import { Http } from '@angular/http';
+import { Http, RequestOptions, Response, URLSearchParams } from '@angular/http';
+import { Storage } from '@ionic/storage';
+
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/map';
 
@@ -34,6 +36,7 @@ export class AuthProvider {
   };
 
   constructor(
+    private storage: Storage,
     public dbServ: DbProvider,
     private http: Http
   ) {
@@ -57,6 +60,33 @@ export class AuthProvider {
   public isOnline(): Promise<any> {
     return this.http.get(`${Config.SUPERLOGIN_URL}/ping`)
     .toPromise()
+  }
+
+  public getTokenJosefa(): Promise<any> {
+    let auth: string = 'Basic ' + btoa('admin:admin1234');
+    let options:RequestOptions = Config.JOSEFA_OPTIONS(auth);
+    let url: string = Config.JOSEFA_URL+'/authenticate';
+
+    return new Promise( (resolve, reject)=>{
+      this.http.post(url, "", options)
+        .map( (res: Response) => {
+          return res.json();
+        }).subscribe(
+          (res) => {
+            this.storage.set('josefa-token', res.data.token)
+              .catch(err => reject(err));
+            resolve();
+          },
+          err => {
+            reject(err);
+          }
+        );
+    });
+
+  }
+
+  public removeTokenJosefa(): Promise<any>{
+    return this.storage.remove('josefa-token');
   }
 
   public get isLogged(): boolean {
