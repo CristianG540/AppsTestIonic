@@ -119,23 +119,22 @@ export class ConfirmarOrdenPage {
      */
     this.ordenServ.pushItem(orden)
       .then(res=>{
-
+        // Actualizo la cantidad de los productos que se ordenaron
+        return this.prodServ.updateQuantity(carItems)
+      })
+      .then(res=>{
         /** Vacio el carrito y envio el usuario al tab de ordenes */
-        this.cartServ.destroyDB();
+        this.cartServ.destroyDB(true);
         this.navCtrl.popToRoot();
         this.navCtrl.parent.select(3);
         /** *** *** *** *** *** *** *** *** *** *** *** *** ***   */
+        loading.dismiss();
 
-        // Actualizo la cantidad de los productos que se ordenaron
-        return this.prodServ.updateQuantity(carItems)
+        return this.ordenServ.sendOrdersSap()
 
       })
       .then(res=>{
-        console.warn("Respuesta cantidad actualizada", res);
-        loading.dismiss();
-
-        this.ordenServ.sendOrdersSap()
-
+        console.warn("RESPUESTA DE LAS ORDENES ", res);
       })
       .catch(err=>{
         this.util.errorHandler(err.message, err, loading);

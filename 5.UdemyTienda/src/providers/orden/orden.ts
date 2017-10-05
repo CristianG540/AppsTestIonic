@@ -2,14 +2,21 @@ import { Injectable, ApplicationRef } from "@angular/core";
 import { Http, RequestOptions, Response, URLSearchParams } from '@angular/http';
 import { Storage } from '@ionic/storage';
 import { Events } from 'ionic-angular';
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/toPromise';
+import 'rxjs/add/observable/forkJoin';
+
 import PouchDB from 'pouchdb';
 import _ from 'lodash';
+import * as moment from 'moment';
 
 //Providers
 import { Config as cg } from "../config/config";
+import { DbProvider } from "../db/db";
 //Models
 import { Orden } from './models/orden';
-import { DbProvider } from "../db/db";
+import { CarItem } from "../carrito/models/carItem";
 
 @Injectable()
 export class OrdenProvider {
@@ -80,24 +87,63 @@ export class OrdenProvider {
   }
 
 
-  public sendOrdersSap(): any {
+  public sendOrdersSap(): Promise<any> {
 
-    this.storage.get('josefa-token').then((token: string) => {
+    return new Promise( (resolve, reject) => {
 
-      let options:RequestOptions = cg.JOSEFA_OPTIONS('Bearer ' + token);
-      let url: string = cg.JOSEFA_URL+'/sap';
+      this.storage.get('josefa-token').then((token: string) => {
 
-      return this.http.get(url, options)
-      .map( (res: Response) => {
-        return res.json();
-      }).subscribe(
-        res => {
-          console.log("Info JOSEFA", res);
-        },
-        err => {
-          console.error("err JOSEFA", err);
-        }
-      );
+        let options:RequestOptions = cg.JOSEFA_OPTIONS('Bearer ' + token);
+          /**
+           * guardo un array de observables cada uno con una peticion
+           * post al api qur manda las ordenes pendientes a sap
+           */
+          let ordenesCalls: Observable<any>[] = _.map(this.ordenesPendientes, (orden: Orden) => {
+            debugger;
+            //mapeo los productos de la orden segun el formato del api
+            let items: any = _.map( orden.items, (item: CarItem) => {
+              return {
+                referencia : item._id,
+                cantidad   : item.cantidad,
+                descuento  : 0
+              }
+            });
+            // url y cuerpo de la peticion
+            let url: string = cg.JOSEFA_URL+'/sap/order';
+            let body: string = JSON.stringify({
+              id             : orden._id,
+              fecha_creacion : moment(parseInt(orden._id)).format("YYYY-MM-DD"),
+              nit_cliente    : orden.nitCliente,
+              comentarios    : orden.observaciones,
+              productos      : items
+            });
+
+            return this.http.post(url, body, options)//.map( (res: Response) => res.json() )
+
+          });
+
+          Observable.forkJoin(ordenesCalls).subscribe(
+            res => {
+              debugger;
+              Promise.all(this._ordenes.map( (orden: Orden) => {
+                  orden.estado = true;
+                  return this.pushItem(orden)
+                })
+              ).then(res=>{
+                resolve(res)
+              }).catch(err => reject(err))
+
+            },
+            err => {
+              debugger;
+              reject(err)
+            }
+          )
+
+      }).catch(err => {
+        debugger;
+        reject(err)
+      });
 
     });
 

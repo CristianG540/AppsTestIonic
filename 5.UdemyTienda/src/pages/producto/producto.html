@@ -37,6 +37,9 @@
       <ion-col col-6>
         <b>Marcas:</b> {{ producto.marcas }}
       </ion-col>
+      <ion-col col-6>
+        <b>rev:</b> {{ producto._rev }}
+      </ion-col>
     </ion-row>
     <ion-row>
       <button ion-button block icon-start (click)="addProd()" [disabled]="producto.existencias == 0">

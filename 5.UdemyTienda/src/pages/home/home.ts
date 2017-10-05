@@ -94,10 +94,6 @@ export class HomePage {
     }).present();
   }
 
-  private deleteDB(){
-    this.cartService.destroyDB();
-  }
-
   private trackByProds(index: number, prod: Producto): string {
     return prod._id;
   }

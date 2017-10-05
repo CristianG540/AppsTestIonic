@@ -54,22 +54,7 @@ export class ProductosProvider {
         retry: true
       };
 
-      PouchDB.replicate(this._remoteDB, this._db, replicationOptions)
-        .on("change", change => {
-          console.log(
-            "Prods-replication was changed",
-            change
-          );
-        })
-        .on("paused", info => {
-          console.log(
-            "Prods-replication was paused,usually because of a lost connection",
-            info
-          );
-        })
-        .on('active', () => {
-          console.log("Prods-replication was resumed");
-        })
+      PouchDB.sync(this._db, this._remoteDB, replicationOptions)
         .on("denied", err => {
           console.log(
             "Prods-a document failed to replicate (e.g. due to permissions)",
