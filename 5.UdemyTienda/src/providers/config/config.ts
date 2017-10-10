@@ -20,7 +20,7 @@ export class Config {
   static readonly SUPERLOGIN_URL: string = 'http://192.168.11.29:3000';
 
   /* **************************** Cosas de JOSEFA  *************************** */
-  static readonly JOSEFA_URL: string = 'http://josefa2.igb';
+  static readonly JOSEFA_URL: string = 'http://josefa.com';
   static JOSEFA_OPTIONS(auth: string): RequestOptions{
     let headers = new Headers({
       'Accept'       : 'application/json',
@@ -77,7 +77,7 @@ export class Config {
       message: err,
       buttons: ['Ok']
     }).present();
-    if(err){ console.error(err) }
+    if(err){ console.error("Se presento el error: ",err) }
   }
 
   public showLoading(): Loading {

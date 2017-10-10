@@ -2,11 +2,16 @@ import { Injectable, ApplicationRef } from "@angular/core";
 import { Http, RequestOptions, Response, URLSearchParams } from '@angular/http';
 import { Storage } from '@ionic/storage';
 import { Events } from 'ionic-angular';
+
+/* Maricadas de Rxjs */
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/observable/forkJoin';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/observable/of';
 
+/* Librerias de terceros */
 import PouchDB from 'pouchdb';
 import _ from 'lodash';
 import * as moment from 'moment';
@@ -99,7 +104,7 @@ export class OrdenProvider {
            * post al api qur manda las ordenes pendientes a sap
            */
           let ordenesCalls: Observable<any>[] = _.map(this.ordenesPendientes, (orden: Orden) => {
-            debugger;
+
             //mapeo los productos de la orden segun el formato del api
             let items: any = _.map( orden.items, (item: CarItem) => {
               return {
@@ -118,19 +123,53 @@ export class OrdenProvider {
               productos      : items
             });
 
-            return this.http.post(url, body, options)//.map( (res: Response) => res.json() )
+            return this.http.post(url, body, options).map( (res: Response) => {
+              /**
+               * Si la respuesta de la api no tiene ningun error, y la orden se crea
+               * y entra correctamente a sap devuelvo entonces la respuesta y la orden
+               */
+              return {
+                orden       : orden,
+                responseApi : res.json()
+              }
+            }).catch( (res: Response) => {
+              /**
+               * Si la respuesta de la api falla, y la orden no se crea
+               * correctamente en sap devuelvo entonces la respuesta del error y la orden
+               */
+              return Observable.of({
+                orden       : orden,
+                responseApi : res.json()
+              })
+            })
 
           });
 
           Observable.forkJoin(ordenesCalls).subscribe(
             res => {
-              debugger;
-              Promise.all(this._ordenes.map( (orden: Orden) => {
-                  orden.estado = true;
-                  return this.pushItem(orden)
+
+              let responsesApi = res; // Guardo las respuestas que me delvuelve el api sobre los pedidos hechos
+              /**
+               * Lo que hago aqui es actualizar cada una de las ordenes que sap recibio correctamente
+               * paso el estado de cada una de esas ordenes a enviado (true),  y le asigno a la orden
+               * el DocEntry que sap me devuelve
+               */
+              Promise.all(responsesApi.map( (res: any) => {
+                  if (res.responseApi.code == 201 && _.has(res.responseApi, 'data.DocumentParams.DocEntry') ) {
+                    res.orden.estado = true;
+                    res.orden.error = '';
+                    res.orden.docEntry = res.responseApi.data.DocumentParams.DocEntry;
+                    return this.pushItem(res.orden)
+                  }else{
+                    res.orden.error = JSON.stringify(res.responseApi.data);
+                    return this.pushItem(res.orden)
+                  }
                 })
               ).then(res=>{
-                resolve(res)
+                resolve({
+                  apiRes     : responsesApi,
+                  localdbRes : res
+                })
               }).catch(err => reject(err))
 
             },
@@ -141,12 +180,16 @@ export class OrdenProvider {
           )
 
       }).catch(err => {
-        debugger;
         reject(err)
       });
 
     });
 
+  }
+
+  public isOnline(): Promise<any> {
+    return this.http.get(`${cg.SUPERLOGIN_URL}/ping`)
+    .toPromise()
   }
 
   /** *************** Manejo de el estado de la ui    ********************** */

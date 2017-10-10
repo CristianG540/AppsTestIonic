@@ -8,8 +8,10 @@ import {
   ToastController
 } from "ionic-angular";
 
+/* Models */
 import { Producto } from '../../providers/productos/models/producto';
 
+/*Providers */
 import { ProductosProvider } from '../../providers/productos/productos';
 import { CarritoProvider } from "../../providers/carrito/carrito";
 
@@ -22,6 +24,7 @@ export class HomePage {
 
   private loading: Loading;
   private pushPage: string = 'ProductoPage';
+  private onlineOffline: boolean = navigator.onLine;
 
   constructor(
     public navCtrl: NavController,
@@ -31,6 +34,12 @@ export class HomePage {
     private prodsService: ProductosProvider,
     private cartService: CarritoProvider
   ) {
+    window.addEventListener('online', () => {
+      this.onlineOffline = true;
+    });
+    window.addEventListener('offline', () => {
+      this.onlineOffline = false;
+    });
   }
 
   ionViewDidEnter(){

@@ -29,4 +29,13 @@ export class OrdenesPage {
     this.ordenServ.destroyDB();
   }
 
+
+  public iconOrden(orden) : string {
+    if(orden.error){
+      return 'warning'
+    }
+    return (orden.estado) ? 'checkmark' : 'time';
+  }
+
+
 }

@@ -13,6 +13,10 @@
         <ion-icon name="logo-buffer" item-left></ion-icon>
         Indexar DB
       </button>
+      <button menuClose="left" ion-item detail-none (click)="verificarOrdenes()" [disabled]="btnVerifOrdState">
+        <ion-icon name="cloud-upload" item-left></ion-icon>
+        Verificar Ordenes
+      </button>
       <button ion-item detail-none (click)="logout()">
         <ion-icon name="power" item-left></ion-icon>
         Desconectarse

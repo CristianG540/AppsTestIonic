@@ -7,6 +7,7 @@ import {
 } from "ionic-angular";
 import { StatusBar } from "@ionic-native/status-bar";
 import { SplashScreen } from "@ionic-native/splash-screen";
+import _ from "lodash";
 
 //Providers
 import { Config } from "../providers/config/config";
@@ -22,6 +23,12 @@ import { CarritoProvider } from "../providers/carrito/carrito";
 export class MyApp {
   rootPage: any = "LoginPage";
   @ViewChild('content') content: NavController;
+
+  // guardo el estado del boton para verficar las ordenes
+  // si alguien lo clickea este deshabilita hasta que las ordenes
+  // se envien y sap responda, esto para evitar que envien las ordenes
+  // muchas veces
+  private btnVerifOrdState: boolean = false;
 
   constructor(
     platform: Platform,
@@ -93,6 +100,35 @@ export class MyApp {
           }).present();
         }
       })
+  }
+
+  private verificarOrdenes(): void {
+    this.btnVerifOrdState = true;
+    this.ordenServ.sendOrdersSap()
+    .then(responses=>{
+      let failOrders = _.map(responses.apiRes, (res: any) => {
+        return res.responseApi.code == 400;
+      })
+      if(failOrders.length > 0){
+        this.alertCtrl.create({
+          title: "Advertencia.",
+          message: failOrders.length+' ordenes no se han podido subir a sap, verifique su conexion a internet y vuelva a intentarlo',
+          buttons: ['Ok']
+        }).present();
+      }else{
+        this.alertCtrl.create({
+          title: "Info.",
+          message: "Las ordenes se subieron correctamente a sap.",
+          buttons: ['Ok']
+        }).present();
+      }
+      console.warn("RESPUESTA DE LAS ORDENES ", responses);
+      this.btnVerifOrdState = false;
+    })
+    .catch(err=>{
+      this.btnVerifOrdState = false;
+      this.util.errorHandler(err.message, err);
+    })
   }
 
   private cargarPagina(pagina: any): void {

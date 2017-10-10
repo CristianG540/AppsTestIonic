@@ -31,13 +31,22 @@
     </ion-item>
   </ion-list>
 
+  <accordion title="Error en la orden" color="danger" *ngIf="_error">
+    {{ _error }}
+  </accordion>
+
 </ion-content>
 
 <ion-footer>
   <ion-toolbar >
-    <ion-row>
+    <ion-row *ngIf="_observacion">
       <ion-col >
         <b>Observacion:</b>&nbsp; {{ _observacion }}
+      </ion-col>
+    </ion-row>
+    <ion-row *ngIf="_codSap">
+      <ion-col >
+        <b>Codigo SAP:</b>&nbsp; {{ _codSap }}
       </ion-col>
     </ion-row>
     <ion-row>

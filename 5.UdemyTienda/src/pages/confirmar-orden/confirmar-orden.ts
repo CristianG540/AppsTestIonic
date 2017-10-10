@@ -130,14 +130,17 @@ export class ConfirmarOrdenPage {
         /** *** *** *** *** *** *** *** *** *** *** *** *** ***   */
         loading.dismiss();
 
-        return this.ordenServ.sendOrdersSap()
+        return this.ordenServ.isOnline()
 
+      })
+      .then(res=>{
+        return this.ordenServ.sendOrdersSap();
       })
       .then(res=>{
         console.warn("RESPUESTA DE LAS ORDENES ", res);
       })
       .catch(err=>{
-        this.util.errorHandler(err.message, err, loading);
+        this.util.errorHandler(err.message, err);
       })
   }
 

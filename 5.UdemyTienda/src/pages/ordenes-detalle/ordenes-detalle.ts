@@ -21,6 +21,8 @@ export class OrdenesDetallePage {
   private _total: number = 0;
   private _cliente: string;
   private _observacion: string;
+  private _codSap: string;
+  private _error: string;
 
   constructor(
     private navParams: NavParams,
@@ -36,6 +38,8 @@ export class OrdenesDetallePage {
     this._total = this.navParams.data.total;
     this._cliente = (this.navParams.data.nitCliente) ? this.navParams.data.nitCliente : this.navParams.data.newClient.codCliente;
     this._observacion = this.navParams.data.observaciones;
+    this._codSap = this.navParams.data.docEntry;
+    this._error = this.navParams.data.error;
     let prodsId = _.map(this._itemsOrder, "_id");
 
     this.prodServ.fetchProdsByids(prodsId)
