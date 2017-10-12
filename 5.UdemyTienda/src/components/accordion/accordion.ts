@@ -25,7 +25,6 @@ export class AccordionComponent implements OnInit {
   ) {}
 
   ngOnInit(){
-    console.log(this.cardContent.nativeElement);
     this.renderer.setElementStyle(this.cardContent.nativeElement, "webkitTransition", "max-height 500ms, padding 500ms")
   }
 

@@ -5,6 +5,7 @@ import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { IonicStorageModule } from '@ionic/storage';
+import { Network } from '@ionic-native/network';
 
 import { MyApp } from './app.component';
 import { CarritoProvider } from '../providers/carrito/carrito';
@@ -36,6 +37,7 @@ import { DbProvider } from '../providers/db/db';
   providers: [
     StatusBar,
     SplashScreen,
+    Network,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     CarritoProvider,
     ProductosProvider,

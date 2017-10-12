@@ -13,7 +13,7 @@
         <ion-icon name="logo-buffer" item-left></ion-icon>
         Indexar DB
       </button>
-      <button menuClose="left" ion-item detail-none (click)="verificarOrdenes()" [disabled]="btnVerifOrdState">
+      <button menuClose="left" ion-item detail-none (click)="verificarOrdenes()" [disabled]="btnVerifOrdState || !util.onlineOffline">
         <ion-icon name="cloud-upload" item-left></ion-icon>
         Verificar Ordenes
       </button>

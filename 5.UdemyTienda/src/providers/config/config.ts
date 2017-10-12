@@ -10,17 +10,24 @@ import {
 @Injectable()
 export class Config {
   public loading: Loading;
+  public onlineOffline: boolean = navigator.onLine;
   constructor(
     private alertCtrl: AlertController,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
   ){
+    window.addEventListener('online', () => {
+      this.onlineOffline = true;
+    });
+    window.addEventListener('offline', () => {
+      this.onlineOffline = false;
+    });
   }
 
   static readonly SUPERLOGIN_URL: string = 'http://192.168.11.29:3000';
 
   /* **************************** Cosas de JOSEFA  *************************** */
-  static readonly JOSEFA_URL: string = 'http://josefa.com';
+  static readonly JOSEFA_URL: string = 'http://gatortyres.com/';
   static JOSEFA_OPTIONS(auth: string): RequestOptions{
     let headers = new Headers({
       'Accept'       : 'application/json',

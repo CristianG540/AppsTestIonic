@@ -1,17 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Http, RequestOptions, Response, URLSearchParams } from '@angular/http';
-import _ from 'lodash';
-import PouchDB from 'pouchdb';
-
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/toPromise';
-
+/* librerias de terceros */
+import _ from 'lodash';
+import PouchDB from 'pouchdb';
+import cordovaSqlitePlugin from 'pouchdb-adapter-cordova-sqlite';
+//Providers
+import { Config } from '../config/config'
+// Models
 import { Producto } from './models/producto';
 import { Categoria } from './models/categoria';
-import { Config } from '../config/config'
 import { CarItem } from "../carrito/models/carItem";
-
 // Info del por que hago esto https://github.com/domiSchenk/PouchDB-typescript-definitions/issues/4
 declare var emit:any;
 
@@ -40,8 +41,13 @@ export class ProductosProvider {
 
   constructor(
     public http: Http
-  ) {
-    if (!this._db) {
+  ) {}
+
+  public initDB(): Promise<any>{
+    //PouchDB.plugin(cordovaSqlitePlugin);
+    return new Promise( (resolve, reject) => {
+
+      //this._db = new PouchDB("productos.db", {adapter: 'cordova-sqlite'});
       this._db = new PouchDB("productos");
       this._remoteDB = new PouchDB(Config.CDB_URL, {
         auth: {
@@ -49,22 +55,45 @@ export class ProductosProvider {
           password: "admin"
         }
       });
-      let replicationOptions = {
-        live: true,
-        retry: true
-      };
 
-      PouchDB.sync(this._db, this._remoteDB, replicationOptions)
-        .on("denied", err => {
-          console.log(
-            "Prods-a document failed to replicate (e.g. due to permissions)",
-            err
-          );
+      PouchDB.replicate(this._remoteDB, this._db, { batch_size : 500 })
+        .on('change', function (info) {
+          console.warn("Primera replicada change", info);
+        })
+        .on("complete", info => {
+          //Si la primera replicacion se completa con exito sincronizo la db
+          //y de vuelvo la info sobre la sincronizacion
+          this.syncDB();
+          resolve(info);
         })
         .on("error", err => {
-          console.log("Prods-totally unhandled error (shouldn't happen)", err);
+          //Me preguntare a mi mismo en el futuro por que mierda pongo a sincronizar
+          //La base de datos si la primera sincronisacion falla, lo pongo aqui por q
+          //si el usuario cierra la app y la vuelve a iniciar, el evento de initdb
+          //se ejecutaria de nuevo y si por algun motivo no tiene internet entonces
+          // la replicacion nunca se va completar y la base de datos
+          //no se va a sincronizar, por eso lo lanzo de nuevo aqui el sync
+          this.syncDB();
+          reject(err);
         });
-    }
+
+    })
+
+  }
+
+  private syncDB(): void {
+    let replicationOptions = {
+      live       : true,
+      retry      : true,
+      batch_size : 500
+    };
+    PouchDB.sync(this._db, this._remoteDB, replicationOptions)
+    .on("denied", err => {
+      console.log("Prods-a failed to replicate due to permissions",err);
+    })
+    .on("error", err => {
+      console.log("Prods-totally unhandled error (shouldn't happen)", err);
+    });
   }
 
   /**
@@ -82,11 +111,11 @@ export class ProductosProvider {
       views: {
         categoriaview: {
           map : function (doc) {
-            var car = doc.categoria.split(",")
-            if(parseInt(doc.existencias)>0){
-              emit(car[0], 1);
+            if(parseInt(doc.existencias)>0 && doc.marcas){
+              emit(doc.marcas, 1);
             }
-          }.toString() // The .toString() at the end of the map function is necessary to prep the object for becoming valid JSON.
+          }.toString(), // The .toString() at the end of the map function is necessary to prep the object for becoming valid JSON.
+          reduce: '_sum'
         }
       }
     }
@@ -100,7 +129,8 @@ export class ProductosProvider {
     }).then( () => {
       return this._db.query('categoriaview', {
         group_level : 1,
-        group       : true
+        group       : true,
+        reduce      : true
       });
     }).then(res => {
       if (res && res.rows.length > 0) {
@@ -113,6 +143,37 @@ export class ProductosProvider {
       }
       return this._categorias;
     })
+
+
+    /**
+     * otra forma de hacer todo lo anterior es la sgte
+     */
+    /*
+    let mapReduceFun = {
+      map : function (doc) {
+        if(parseInt(doc.existencias)>0 && doc.marcas){
+          emit(doc.marcas, 1);
+        }
+      },
+      reduce: '_sum'
+    };
+
+   return this._db.query(mapReduceFun, {
+        group_level : 1,
+        group       : true,
+        reduce      : true
+    }).then(res => {
+      if (res && res.rows.length > 0) {
+        this._categorias = _.map(res.rows, (v: any, k: number) => {
+          return new Categoria(
+            v.key,
+            v.value
+          );
+        });
+      }
+      return this._categorias;
+    })
+    */
 
   }
 
@@ -171,8 +232,8 @@ export class ProductosProvider {
       views: {
         producto_categoria: {
           map : function (doc) {
-            if(doc.categoria && parseInt(doc.existencias)>0){
-              emit(doc.categoria.toLowerCase(), null);
+            if(doc.marcas && parseInt(doc.existencias)>0){
+              emit(doc.marcas.toLowerCase(), null);
             }
           }.toString() // The .toString() at the end of the map function is necessary to prep the object for becoming valid JSON.
         }
@@ -187,8 +248,7 @@ export class ProductosProvider {
       // ignore if doc already exists
     }).then( () => {
       return this._db.query('categoriaview/producto_categoria', {
-        startkey     : categoria,
-        endkey       : categoria+"\uffff",
+        key          : categoria,
         skip         : this.skipByCat,
         limit        : this.cantProdsPag,
         include_docs : true

@@ -5,7 +5,9 @@ import {
   LoadingController,
   AlertController,
   IonicPage,
-  ToastController
+  ToastController,
+  Platform,
+  MenuController
 } from "ionic-angular";
 
 /* Models */
@@ -14,6 +16,7 @@ import { Producto } from '../../providers/productos/models/producto';
 /*Providers */
 import { ProductosProvider } from '../../providers/productos/productos';
 import { CarritoProvider } from "../../providers/carrito/carrito";
+import { Config as Cg} from '../../providers/config/config';
 
 @IonicPage()
 @Component({
@@ -24,29 +27,40 @@ export class HomePage {
 
   private loading: Loading;
   private pushPage: string = 'ProductoPage';
-  private onlineOffline: boolean = navigator.onLine;
 
   constructor(
+    private platform: Platform,
     public navCtrl: NavController,
+    private menuCtrl: MenuController,
     private loadingCtrl: LoadingController,
     private toastCtrl: ToastController,
     private alertCtrl: AlertController,
     private prodsService: ProductosProvider,
-    private cartService: CarritoProvider
+    private cartService: CarritoProvider,
+    private util: Cg
   ) {
-    window.addEventListener('online', () => {
-      this.onlineOffline = true;
-    });
-    window.addEventListener('offline', () => {
-      this.onlineOffline = false;
+    this.menuCtrl.enable(true);
+  }
+
+  ionViewDidLoad(){
+    this.showLoading();
+    this.prodsService.initDB().then( info => {
+      this.loading.dismiss();
+      console.warn('Prods- First Replication complete');
+    }).catch( err => {
+      this.loading.dismiss();
+      console.error("Prods-totally unhandled error (shouldn't happen)", err);
+    }).then(()=>{
+      //this.loading.dismiss();
+      this.prodsService.resetProds();
+      this.prodsService.recuperarPagSgte()
+        .catch( err => this.errorHandler(err.message, err) );
     });
   }
 
   ionViewDidEnter(){
     // ESTA MIERDA AQUI ABAJO LA DE RESETEAR LOS PRODS SE DEBE PODER HACER MEJOR CON POUCH
-    this.prodsService.resetProds();
-    this.prodsService.recuperarPagSgte()
-      .catch( err => this.errorHandler(err.message, err) );
+
   }
 
   private doInfinite(infiniteScroll): void {

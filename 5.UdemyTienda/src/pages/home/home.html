@@ -13,7 +13,7 @@
 </ion-header>
 
 <ion-content>
-  <h4> {{ onlineOffline }} </h4>
+  <h4> {{ util.onlineOffline }} </h4>
   <ion-grid>
     <ion-row no-padding>
       <ion-col col-6 no-padding *ngFor="let prod of prodsService.prods; trackBy: trackByProds">

@@ -7,6 +7,7 @@ import {
 } from "ionic-angular";
 import { StatusBar } from "@ionic-native/status-bar";
 import { SplashScreen } from "@ionic-native/splash-screen";
+import { Network } from '@ionic-native/network';
 import _ from "lodash";
 
 //Providers
@@ -34,7 +35,7 @@ export class MyApp {
     platform: Platform,
     statusBar: StatusBar,
     splashScreen: SplashScreen,
-    //private navCtrl: NavController,
+    private network: Network,
     private alertCtrl: AlertController,
     private menuCrl: MenuController,
     private clienteServ: ClientesProvider,
@@ -57,6 +58,25 @@ export class MyApp {
       // Here you can do any higher level native things you might need.
       statusBar.styleDefault();
       splashScreen.hide();
+
+      // watch network for a disconnect
+      let disconnectSubscription = this.network.onDisconnect().subscribe(() => {
+        console.log('network was disconnected :-(');
+      });
+
+      // watch network for a connection
+      let connectSubscription = this.network.onConnect().subscribe(() => {
+        console.log('network connected!');
+        // We just got a connection but we need to wait briefly
+        // before we determine the connection type. Might need to wait.
+        // prior to doing any api requests as well.
+        setTimeout(() => {
+          if (this.network.type === 'wifi') {
+            console.log('we got a wifi connection, woohoo!');
+          }
+        }, 3000);
+      });
+
     });
   }
 
@@ -104,6 +124,7 @@ export class MyApp {
 
   private verificarOrdenes(): void {
     this.btnVerifOrdState = true;
+
     this.ordenServ.sendOrdersSap()
     .then(responses=>{
       let failOrders = _.map(responses.apiRes, (res: any) => {
@@ -129,6 +150,7 @@ export class MyApp {
       this.btnVerifOrdState = false;
       this.util.errorHandler(err.message, err);
     })
+
   }
 
   private cargarPagina(pagina: any): void {

@@ -21,7 +21,6 @@ export class ClientesProvider {
     private util: cg
   ) {
     PouchDB.plugin(require("pouchdb-quick-search"));
-    //this.util.showLoading();
     if (!this._db) {
       this._db = new PouchDB("cliente");
       this._remoteDB = new PouchDB(cg.CDB_URL_CLIENTES, {
@@ -67,25 +66,26 @@ export class ClientesProvider {
       fields: ["nombre_cliente"],
       limit: 50,
       include_docs: true,
-      highlighting: true
+      highlighting: true,
+      stale: 'ok'
     });
   }
 
-  public indexDbClientes(): Promise<any> {
+  public indexDbClientes(): any {
     return this._db.search({
       fields: ["nombre_cliente"],
       build: true
     });
+    //return this.fetchAndRenderAllDocs();
   }
 
   /** *************** Manejo de el estado de la ui    ********************** */
 
   public fetchAndRenderAllDocs(): Promise<any> {
-    return this._db
-      .allDocs({
+
+    return this._db.allDocs({
         include_docs: true
-      })
-      .then(res => {
+      }).then(res => {
         this._clientes = res.rows.map(row => {
           return new Cliente(
             row.doc._id,
@@ -99,8 +99,7 @@ export class ClientesProvider {
         });
         console.log("_all_docs clientes pouchDB", res.total_rows);
         return res;
-      })
-      .catch(console.log.bind(console));
+      });
   }
 
   private _reactToChanges(): void {

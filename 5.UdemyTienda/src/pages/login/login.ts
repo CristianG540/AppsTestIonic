@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, MenuController } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators  } from "@angular/forms";
 
 //Providers
@@ -23,12 +23,14 @@ export class LoginPage {
 
   constructor(
     private navCtrl: NavController,
+    private menuCtrl: MenuController,
     private fb: FormBuilder,
     private navParams: NavParams,
     private authService: AuthProvider,
     private dbServ: DbProvider,
     private util: cg
   ) {
+    this.menuCtrl.enable(false);
   }
 
   //Runs when the page is about to enter and become the active page.
