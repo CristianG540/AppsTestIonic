@@ -61,20 +61,15 @@ export class MyApp {
 
       // watch network for a disconnect
       let disconnectSubscription = this.network.onDisconnect().subscribe(() => {
-        console.log('network was disconnected :-(');
+        alert('network was disconnected :-(');
+        this.util.onlineOffline = false;
       });
 
       // watch network for a connection
       let connectSubscription = this.network.onConnect().subscribe(() => {
-        console.log('network connected!');
-        // We just got a connection but we need to wait briefly
-        // before we determine the connection type. Might need to wait.
-        // prior to doing any api requests as well.
-        setTimeout(() => {
-          if (this.network.type === 'wifi') {
-            console.log('we got a wifi connection, woohoo!');
-          }
-        }, 3000);
+        alert('network connected!');
+        this.util.onlineOffline = true;
+        //this.verificarOrdenes();
       });
 
     });
@@ -123,33 +118,35 @@ export class MyApp {
   }
 
   private verificarOrdenes(): void {
-    this.btnVerifOrdState = true;
 
-    this.ordenServ.sendOrdersSap()
-    .then(responses=>{
-      let failOrders = _.map(responses.apiRes, (res: any) => {
-        return res.responseApi.code == 400;
+    if(this.ordenServ.ordenesPendientes.length > 0){
+      this.btnVerifOrdState = true;
+      this.ordenServ.sendOrdersSap()
+      .then(responses=>{
+        let failOrders = _.filter(responses.apiRes, (res: any) => {
+          return res.responseApi.code == 400;
+        })
+        if(failOrders.length > 0){
+          this.alertCtrl.create({
+            title: "Advertencia.",
+            message: failOrders.length+' ordenes no se han podido subir a sap, verifique su conexion a internet y vuelva a intentarlo',
+            buttons: ['Ok']
+          }).present();
+        }else{
+          this.alertCtrl.create({
+            title: "Info.",
+            message: "Las ordenes se subieron correctamente a sap.",
+            buttons: ['Ok']
+          }).present();
+        }
+        console.warn("RESPUESTA DE LAS ORDENES ", responses);
+        this.btnVerifOrdState = false;
       })
-      if(failOrders.length > 0){
-        this.alertCtrl.create({
-          title: "Advertencia.",
-          message: failOrders.length+' ordenes no se han podido subir a sap, verifique su conexion a internet y vuelva a intentarlo',
-          buttons: ['Ok']
-        }).present();
-      }else{
-        this.alertCtrl.create({
-          title: "Info.",
-          message: "Las ordenes se subieron correctamente a sap.",
-          buttons: ['Ok']
-        }).present();
-      }
-      console.warn("RESPUESTA DE LAS ORDENES ", responses);
-      this.btnVerifOrdState = false;
-    })
-    .catch(err=>{
-      this.btnVerifOrdState = false;
-      this.util.errorHandler(err.message, err);
-    })
+      .catch(err=>{
+        this.btnVerifOrdState = false;
+        this.util.errorHandler(err.message, err);
+      })
+    }
 
   }
 

@@ -325,7 +325,7 @@ export class ProductosProvider {
      * Para mas informacion sobre este plugin la pagina principal:
      * https://github.com/pouchdb-community/pouchdb-quick-search
      */
-    query = query.toUpperCase();
+    query = (query) ? query.toUpperCase() : "";
     return this._db.allDocs({
       include_docs : true,
       startkey     : query,

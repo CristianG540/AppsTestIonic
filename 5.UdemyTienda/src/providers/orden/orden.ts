@@ -94,6 +94,12 @@ export class OrdenProvider {
 
   public sendOrdersSap(): Promise<any> {
 
+    if(!this.util.onlineOffline){
+      return Promise.reject({
+        message: "No hay conexión, su pedido quedara almacenado en el dispositivo."
+      });
+    }
+
     return new Promise( (resolve, reject) => {
 
       this.storage.get('josefa-token').then((token: string) => {
@@ -135,7 +141,7 @@ export class OrdenProvider {
             }).catch( (res: Response) => {
               /**
                * Si la respuesta de la api falla, y la orden no se crea
-               * correctamente en sap devuelvo entonces la respuesta del error y la orden
+               * correctamente en sap devuelvo entonces la respuesta del error y la orden en un observable
                */
               return Observable.of({
                 orden       : orden,
@@ -170,11 +176,12 @@ export class OrdenProvider {
                   apiRes     : responsesApi,
                   localdbRes : res
                 })
-              }).catch(err => reject(err))
+              }).catch(err => {
+                reject(err)
+              })
 
             },
             err => {
-              debugger;
               reject(err)
             }
           )
@@ -185,11 +192,6 @@ export class OrdenProvider {
 
     });
 
-  }
-
-  public isOnline(): Promise<any> {
-    return this.http.get(`${cg.SUPERLOGIN_URL}/ping`)
-    .toPromise()
   }
 
   /** *************** Manejo de el estado de la ui    ********************** */

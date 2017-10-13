@@ -6,6 +6,7 @@ import { FormGroup, FormBuilder, Validators  } from "@angular/forms";
 import { AuthProvider } from '../../providers/auth/auth';
 import { DbProvider } from "../../providers/db/db";
 import { Config as cg } from "../../providers/config/config";
+import { CarritoProvider } from '../../providers/carrito/carrito';
 
 
 @IonicPage()
@@ -28,6 +29,7 @@ export class LoginPage {
     private navParams: NavParams,
     private authService: AuthProvider,
     private dbServ: DbProvider,
+    private cartServ: CarritoProvider,
     private util: cg
   ) {
     this.menuCtrl.enable(false);
@@ -57,6 +59,7 @@ export class LoginPage {
     .then(res=>{
       console.log(res);
       this.dbServ.init(res.userDBs.supertest);
+      this.cartServ.initDB();
       this.navCtrl.setRoot('TabsPage');
       return this.authService.getTokenJosefa();
     })

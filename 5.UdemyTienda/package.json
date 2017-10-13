@@ -1,8 +1,8 @@
 {
-    "name": "5.UdemyTienda",
+    "name": "igb-store",
     "version": "0.0.1",
-    "author": "Ionic Framework",
-    "homepage": "http://ionicframework.com/",
+    "author": "Cristian Gonzalez V",
+    "homepage": "https://registry.jsonresume.org/a59637ee",
     "private": true,
     "scripts": {
         "clean": "ionic-app-scripts clean",
@@ -60,7 +60,7 @@
         "@types/pouchdb": "^6.3.1",
         "typescript": "2.3.4"
     },
-    "description": "An Ionic project",
+    "description": "Tienda offline para IGB",
     "cordova": {
         "plugins": {
             "cordova-plugin-console": {},
