@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, ApplicationRef } from '@angular/core';
 import { Http, RequestOptions, Response, URLSearchParams } from '@angular/http';
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
@@ -40,7 +40,8 @@ export class ProductosProvider {
 
 
   constructor(
-    public http: Http
+    public http: Http,
+    private appRef: ApplicationRef, // lo uso para actualizar la UI cuando se hace un cambio fiera de la ngZone
   ) {}
 
   public initDB(): Promise<any>{
@@ -94,6 +95,7 @@ export class ProductosProvider {
     .on("error", err => {
       console.log("Prods-totally unhandled error (shouldn't happen)", err);
     });
+    this._reactToChanges();
   }
 
   /**
@@ -397,6 +399,64 @@ export class ProductosProvider {
     this.startkey = '';
     this.skip = 0;
   }
+
+
+  /** *************** Manejo de el estado de la ui    ********************** */
+  private _reactToChanges(): void {
+    this._db.changes({
+      live: true,
+      since: 'now',
+      include_docs: true
+    })
+    .on( 'change', change => {
+
+      if (change.deleted) {
+        // change.id holds the deleted id
+        this._onDeleted(change.doc._id);
+      } else { // updated/inserted
+        // change.doc holds the new doc
+        this._onUpdatedOrInserted(change.doc);
+      }
+
+    })
+    .on( 'error', console.log.bind(console));
+  }
+
+  private _onDeleted(id: string): void {
+    let index: number = Config.binarySearch(
+      this._prods,
+      '_id',
+      id
+    );
+    let doc = this._prods[index];
+    if (doc && doc._id == id) {
+      this._prods.splice(index, 1);
+    }
+    /**
+     * Actualiza la interfaz de usuario
+     * https://angular.io/api/core/ApplicationRef
+     * https://goo.gl/PDi6iM
+     */
+    this.appRef.tick();
+  }
+
+  private _onUpdatedOrInserted(newDoc: Producto): void {
+    let index: number = Config.binarySearch(
+      this._prods,
+      '_id',
+      newDoc._id
+    );
+    let doc = this._prods[index];
+    if (doc && doc._id == newDoc._id) { // update
+      this._prods[index] = newDoc;
+    } else { // insert
+      this._prods.splice(index, 0, newDoc);
+    }
+    this.appRef.tick();
+  }
+  /** *********** Fin Manejo de el estado de la ui    ********************** */
+
+  ///////////////////////// GETTERS and SETTERS ////////////////////
 
   public get prods() : Producto[] {
     return JSON.parse(JSON.stringify(this._prods));
